@@ -20,14 +20,14 @@ RETRY_TIME = 600
 
 HOMEWORK_VERDICTS = {
     "approved": "Работа проверена: ревьюеру всё понравилось. Ура!",
-    "reviewing": "Работа взята на проверку ревьюером.",
-    "rejected": "Работа проверена: у ревьюера есть замечания.",
+    "reviewing": "Работа взята на проверку ревьюером",
+    "rejected": "Работа проверена: у ревьюера есть замечания",
 }
 
 
 def send_message(bot: telegram.bot.Bot, message: str) -> None:
-    """The function of sending a message."""
-    logger.debug("Trying to send a message to Telegram.")
+    """The function of sending a message"""
+    logger.debug("Trying to send a message to Telegram")
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.debug(f'Message "{message}", sent successfully')
@@ -60,7 +60,7 @@ def get_api_answer(current_timestamp: int) -> dict:
 
 def check_response(response: dict) -> list:
     """We get from the response from the API"""
-    logger.debug("We start checking the response from the server.")
+    logger.debug("We start checking the response from the server")
     if not isinstance(response, dict):
         raise TypeError(
             f"Wrong data type received - "
@@ -68,39 +68,39 @@ def check_response(response: dict) -> list:
         )
     if not response:
         raise ValueError(
-            "Received an empty dictionary in response from the server."
+            "Received an empty dictionary in response from the server"
         )
     if "homeworks" not in response:
         raise KeyError(
-            "The resulting dictionary does not contain the homeworks key."
+            "The resulting dictionary does not contain the homeworks key"
         )
     homework = response.get("homeworks")
     if not isinstance(homework, list):
         raise TypeError(
-            f"Wrong data type received - " 
-            f"{type(homework)}, expected list"
+            f"Wrong data type received" 
+            f"{type(homework)},expected list"
         )
     return homework
 
 
 def parse_status(homework: dict) -> str:
-    """Parsing values, logging the absence of expected values."""
+    """Parsing values, logging the absence of expected values"""
     homework_name = homework.get("homework_name")
     if not homework_name:
-        raise KeyError("There is no homework_name key in the list.")
+        raise KeyError("There is no homework_name key in the list")
     homework_status = homework.get("status")
     homework_comment = homework.get("reviewer_comment")
     if not homework_status:
-        raise KeyError("There is no status key in the list.")
+        raise KeyError("There is no status key in the list")
     if homework_status not in HOMEWORK_VERDICTS:
-        raise ValueError("Unknown homework status.")
+        raise ValueError("Unknown homework status")
     verdict = HOMEWORK_VERDICTS.get(homework_status)
-    return f'Homework verification status changed "{homework_name}".\
-            {verdict} {homework_comment}'
+    return f'Homework verification status changed "{homework_name}".{verdict}\
+          {homework_comment}'
 
 
 def check_tokens() -> bool:
-    """Checking that tokens are available, logging the absence."""
+    """Checking that tokens are available, logging the absence"""
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
@@ -112,8 +112,8 @@ def main() -> None:
     last_message = None
     last_message_error = None
     if not check_tokens():
-        logger.critical("Error reading tokens.")
-        sys.exit("Error reading tokens.")
+        logger.critical("Error reading tokens")
+        sys.exit("Error reading tokens")
     while True:
         try:
             response = get_api_answer(current_timestamp)
@@ -129,7 +129,7 @@ def main() -> None:
                         "sending message canceled"
                     )
             else:
-                logger.debug("Missing new homework status.")
+                logger.debug("Missing new homework status")
             current_timestamp = int(time.time())
         except Exception as error:
             message = f"Program crash: {error}"
