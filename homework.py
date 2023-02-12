@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from exceptions import EndpointError, SendMessageError, RequestError
 
 logger = logging.getLogger(__name__)
+
 load_dotenv()
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -75,8 +76,7 @@ def check_response(response: dict) -> list:
     homework = response.get("homeworks")
     if not isinstance(homework, list):
         raise TypeError(
-            f"Wrong data type received - "
-            f"{type(homework)}, expected list"
+            f"Wrong data type received - " f"{type(homework)}, expected list"
         )
     return homework
 
