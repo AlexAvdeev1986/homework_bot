@@ -25,7 +25,7 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def send_message(bot: telegram.bot.Bot, message:str):
+def send_message(bot: telegram.bot.Bot, message):
     logger.debug("Trying to send a message to Telegram.")
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
@@ -34,7 +34,7 @@ def send_message(bot: telegram.bot.Bot, message:str):
         raise SendMessageError("Error sending message to Telegram")
 
 
-def get_api_answer(timestamp: int):
+def get_api_answer(timestamp):
     timestamp = timestamp
     headers = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
     endpoint = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
