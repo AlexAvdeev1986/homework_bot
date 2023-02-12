@@ -26,7 +26,6 @@ HOMEWORK_VERDICTS = {
 
 
 def send_message(bot: telegram.bot.Bot, message: str) -> None:
-    """The function of sending a message, we log the success and error of sending."""
     logger.debug("Trying to send a message to Telegram.")
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
@@ -36,7 +35,7 @@ def send_message(bot: telegram.bot.Bot, message: str) -> None:
 
 
 def get_api_answer(current_timestamp: int) -> dict:
-    """We receive a response from the Yandex API, log a response other than 200."""
+    """We receive a response from the Yandex API"""
     timestamp = current_timestamp
     headers = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
     endpoint = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
@@ -77,7 +76,8 @@ def check_response(response: dict) -> list:
     homework = response.get("homeworks")
     if not isinstance(homework, list):
         raise TypeError(
-            f"Wrong data type received - " f"{type(homework)}, expected list"
+            f"Wrong data type received - " 
+            f"{type(homework)}, expected list"
         )
     return homework
 
@@ -94,7 +94,8 @@ def parse_status(homework: dict) -> str:
     if homework_status not in HOMEWORK_VERDICTS:
         raise ValueError("Unknown homework status.")
     verdict = HOMEWORK_VERDICTS.get(homework_status)
-    return f'Homework verification status changed "{homework_name}". {verdict} {homework_comment}'
+    return f'Homework verification status changed "\
+        {homework_name}". {verdict} {homework_comment}'
 
 
 def check_tokens() -> bool:
