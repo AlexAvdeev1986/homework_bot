@@ -99,7 +99,7 @@ def parse_status(homework: dict) -> str:
 
 
 def check_tokens() -> bool:
-    """Checking that tokens are available, logging the absence"""
+    """Checking that tokens are available"""
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
