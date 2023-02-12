@@ -12,3 +12,6 @@ class EmptyResponseFromAPI(NotForSend):
     """Пустой ответ API."""
     pass
 
+class TelegramError(NotForSend):
+    """Ошибка отправки сообщения в telegram."""
+    pass

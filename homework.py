@@ -8,7 +8,12 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import EmptyResponseFromAPI, NotForSend, WrongResponseCode
+from exceptions import (
+    EmptyResponseFromAPI,
+    NotForSend,
+    TelegramError,
+    WrongResponseCode,
+)
 
 load_dotenv()
 
@@ -35,13 +40,13 @@ def check_tokens():
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
-def send_message(bot, message):
+def send_message(bot: telegram.bot.Bot, message: str) -> None:
     """Отправляет сообщение в Telegram чат."""
     try:
-        bot.send_message(TELEGRAM_CHAT_ID, message)
-        logger.info(f"Сообщение в чат {TELEGRAM_CHAT_ID}: {message}")
-    except Exception as error:
-        raise SystemError("Ошибка отправки сообщения в Telegramm") from error
+        logging.info("Начало отправки статуса в telegram")
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+    except telegram.error.TelegramError as error:
+        raise TelegramError(f"Ошибка отправки статуса в telegram: {error}")
     else:
         logging.info("Статус отправлен в telegram")
 
