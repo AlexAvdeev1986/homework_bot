@@ -25,7 +25,7 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def send_message(bot: telegram.bot.Bot, message):
+def send_message(bot, message):
     logger.debug("Trying to send a message to Telegram.")
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
