@@ -34,8 +34,8 @@ def send_message(bot: telegram.bot.Bot, message: str) -> None:
         raise SendMessageError("Error sending message to Telegram")
 
 
-def get_api_answer(current_timestamp: int) -> dict:
-    timestamp = current_timestamp
+def get_api_answer(timestamp: int) -> dict:
+    timestamp = timestamp
     headers = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
     endpoint = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
     params = {"from_date": timestamp}
@@ -106,7 +106,7 @@ def main() -> None:
     """The main logic of the bot."""
     logger.debug("Start the bot...")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time()) - RETRY_TIME
+    timestamp = int(time.time()) - RETRY_TIME
     last_message = None
     last_message_error = None
     if not check_tokens():
@@ -114,7 +114,7 @@ def main() -> None:
         sys.exit("Error reading tokens.")
     while True:
         try:
-            response = get_api_answer(current_timestamp)
+            response = get_api_answer(timestamp)
             homework = check_response(response)
             if homework:
                 message = parse_status(homework[0])
