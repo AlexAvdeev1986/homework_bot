@@ -104,8 +104,8 @@ def check_tokens() -> bool:
 
 
 def main() -> None:
-    """The main logic of the bot."""
-    logger.debug("Start the bot...")
+    """The main logic of the bot"""
+    logger.debug("Start the bot")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time()) - RETRY_TIME
     last_message = None
