@@ -10,10 +10,7 @@ from dotenv import load_dotenv
 
 from exceptions import (
     StatusCodeError,
-    EmptyResponseFromAPI,
     NotForSend,
-    TelegramError,
-    WrongResponseCode,
 )
 
 load_dotenv()
