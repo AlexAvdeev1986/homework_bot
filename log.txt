@@ -1,1 +1,0 @@
-2023-02-12 16:55:48,885, INFO, Путь - /home/alex86/Рабочий стол/homework_bot/homework.py, Файл - homework.py, Функция - check_response, Номер строки - 60, Проверка ответа от API
