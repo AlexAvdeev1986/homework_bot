@@ -8,7 +8,7 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import (EmptyResponseFromAPI, NotForSend, TelegramError,
+from exceptions import (EmptyResponseFromAPI, NotForSend,
                         WrongResponseCode)
 
 load_dotenv()
@@ -141,8 +141,8 @@ def main():
             if message != prev_msg:
                 send_message(bot, message)
                 prev_msg = message
-
         finally:
+            current_timestamp = response.get('current_date')
             time.sleep(RETRY_PERIOD)
 
 
