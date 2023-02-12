@@ -36,14 +36,14 @@ cd yatube
 
 #Запуск миграции:
 
-python3 manage.py migrate
+python3 homework.py migrate
 
 #если ошибка то  
-python3 manage.py makemigrations
+python3 homework.py makemigrations
 
 #Создание супер пользователя:
 
-python3 manage.py createsuperuser
+python3 homework.py createsuperuser
 
 #Запуск:
 
