@@ -1,3 +1,7 @@
+class StatusCodeError(Exception):
+    """Код запроса отличается."""
+    pass
+
 class WrongResponseCode(Exception):
     """Неверный ответ API."""
     pass
@@ -11,6 +15,7 @@ class NotForSend(Exception):
 class EmptyResponseFromAPI(NotForSend):
     """Пустой ответ API."""
     pass
+
 
 class TelegramError(NotForSend):
     """Ошибка отправки сообщения в telegram."""
