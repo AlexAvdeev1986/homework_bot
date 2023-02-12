@@ -128,7 +128,7 @@ def main() -> None:
                     )
             else:
                 logger.debug("Missing new homework status.")
-            current_timestamp = int(time.time())
+            timestamp = int(time.time())
         except Exception as error:
             message = f"Program crash: {error}"
             logger.error(message)
