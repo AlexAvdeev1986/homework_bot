@@ -63,12 +63,17 @@ def check_response(response: dict) -> list:
     logger.debug("We start checking the response from the server.")
     if not isinstance(response, dict):
         raise TypeError(
-            f"Wrong data type received - " f"{type(response)}, dictionary expected"
+            f"Wrong data type received - "
+            f"{type(response)}, dictionary expected"
         )
     if not response:
-        raise ValueError("Received an empty dictionary in response from the server.")
+        raise ValueError(
+            "Received an empty dictionary in response from the server."
+        )
     if "homeworks" not in response:
-        raise KeyError("The resulting dictionary does not contain the homeworks key.")
+        raise KeyError(
+            "The resulting dictionary does not contain the homeworks key."
+        )
     homework = response.get("homeworks")
     if not isinstance(homework, list):
         raise TypeError(
