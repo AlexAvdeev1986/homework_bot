@@ -1,5 +1,4 @@
 import random
-import string
 from datetime import datetime
 
 import pytest
@@ -14,18 +13,9 @@ def random_timestamp():
 
 @pytest.fixture
 def current_timestamp():
-    return int(datetime.now().timestamp())
+    return datetime.now().timestamp()
 
 
 @pytest.fixture
-def homework_module():
-    import homework
-    return homework
-
-
-@pytest.fixture
-def random_message():
-    def random_string(string_length=15):
-        letters = string.ascii_letters
-        return ''.join(random.choice(letters) for _ in range(string_length))
-    return random_string()
+def api_url():
+    return 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
