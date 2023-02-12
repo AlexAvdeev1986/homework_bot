@@ -83,7 +83,7 @@ def parse_status(homework):
 
 
 def main():
-    """Основная логика работы бота."""
+    """Функция main в ней описана основная логика работы программы."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
     ERROR_CACHE_MESSAGE = ''
@@ -107,7 +107,7 @@ def main():
                 ERROR_CACHE_MESSAGE = message_error
         finally:
             current_timestamp = response.get('current_date')
-            time.sleep(RETRY_TIME)
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
