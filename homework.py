@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 from exceptions import (StatusCodeError)
 
+
 load_dotenv()
 
 
@@ -17,13 +18,12 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-
-RETRY_TIME = 600
+RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 
-HOMEWORK_STATUSES = {
+HOMEWORK_VERDICTS = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
@@ -31,6 +31,9 @@ HOMEWORK_STATUSES = {
 
 TOKEN_ERROR = 'Oшибка переменных окружения'
 
+def check_tokens():
+    """Проверяет доступность переменных окружения."""
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 def send_message(bot, message):
     """Отправляет сообщение в Telegram чат."""
@@ -41,9 +44,9 @@ def send_message(bot, message):
         raise SystemError('Ошибка отправки сообщения в Telegramm') from error
 
 
-def get_api_answer(current_timestamp):
+def get_api_answer(timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса."""
-    params = {'from_date': current_timestamp}
+    params = {'from_date': timestamp}
     try:
         hw_status = requests.get(ENDPOINT, headers=HEADERS, params=params)
         if hw_status.status_code != HTTPStatus.OK:
@@ -80,37 +83,34 @@ def parse_status(homework):
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
-def check_tokens():
-    """Проверяет доступность переменных окружения."""
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
-
-
 def main():
-    """Функция main в ней описана основная логика работы программы."""
+    """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
+    timestamp = int(time.time())
     ERROR_CACHE_MESSAGE = ''
     if not check_tokens():
         logger.critical(TOKEN_ERROR)
         sys.exit(TOKEN_ERROR)
+
     while True:
         try:
-            response = get_api_answer(current_timestamp)
+
+            response = get_api_answer(timestamp)
             hw_list = check_response(response)
             if hw_list:
                 send_message(bot, parse_status(hw_list[0]))
             else:
                 logger.debug('Нет новых статусов')
                 raise Exception('Нет новых статусов')
+
         except Exception as error:
-            logger.error(error)
-            message_error = str(error)
-            if message_error != ERROR_CACHE_MESSAGE:
-                send_message(bot, message_error)
-                ERROR_CACHE_MESSAGE = message_error
+            message = f'Сбой в работе программы: {error}'
+            if message != ERROR_CACHE_MESSAGE:
+                send_message(bot, message)
+                ERROR_CACHE_MESSAGE = message
         finally:
-            current_timestamp = response.get('current_date')
-            time.sleep(RETRY_TIME)
+            timestamp = response.get('current_date')
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
@@ -123,3 +123,4 @@ if __name__ == '__main__':
     handler = logging.StreamHandler(stream=sys.stdout)
     logger.addHandler(handler)
     main()
+
