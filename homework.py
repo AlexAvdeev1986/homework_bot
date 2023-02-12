@@ -77,7 +77,8 @@ def check_response(response: dict) -> list:
     homework = response.get("homeworks")
     if not isinstance(homework, list):
         raise TypeError(
-            f"Wrong data type received - " f"{type(homework)}, expected list"
+            f"Wrong data type received - " 
+            f"{type(homework)}, expected list"
         )
     return homework
 
