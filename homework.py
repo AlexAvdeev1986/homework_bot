@@ -155,11 +155,13 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
-        filename="homework.log",
-        format="%(asctime)s, %(levelname)s, %(name)s, %(message)s",
+        handlers=[
+            logging.FileHandler(
+                os.path.abspath("main.log"), mode="a", encoding="UTF-8"
+            ),
+            logging.StreamHandler(stream=sys.stdout),
+        ],
+        format="%(asctime)s, %(levelname)s, %(funcName)s, "
+        "%(lineno)s, %(name)s, %(message)s",
     )
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler(stream=sys.stdout)
-    logger.addHandler(handler)
     main()
