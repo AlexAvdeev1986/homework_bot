@@ -16,13 +16,12 @@ from exceptions import (
 )
 
 load_dotenv()
-
-
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-RETRY_PERIOD = 600
+
+RETRY_TIME = 600
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 
@@ -34,14 +33,8 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def check_tokens():
-    """Проверяет доступность переменных окружения."""
-    logging.info("Проверка наличия всех токенов")
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
-
-
 def send_message(bot: telegram.bot.Bot, message: str) -> None:
-    """Отправляет сообщение в Telegram чат."""
+    """Отправляет сообщение в telegram."""
     try:
         logging.info("Начало отправки статуса в telegram")
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
@@ -51,8 +44,10 @@ def send_message(bot: telegram.bot.Bot, message: str) -> None:
         logging.info("Статус отправлен в telegram")
 
 
-def get_api_answer(current_timestamp):
-    """Делает запрос к единственному эндпоинту API-сервиса."""
+def get_api_answer(current_timestamp: int) -> dict:
+    """Отправляем запрос к API и получаем список домашних работ.
+    Также проверяем, что эндпоинт отдает статус 200.
+    """
     timestamp = current_timestamp or int(time.time())
     params_request = {
         "url": ENDPOINT,
@@ -80,8 +75,14 @@ def get_api_answer(current_timestamp):
         raise WrongResponseCode(message, error)
 
 
-def check_response(response):
-    """Проверяет ответ API на корректность."""
+def check_response(response: dict) -> list:
+    """Проверяет ответ API на корректность.
+    В качестве параметра функция получает ответ API,
+    приведенный к типам данных Python.
+    Если ответ API соответствует ожиданиям,
+    то функция должна вернуть список домашних работ (он может быть и пустым),
+    доступный в ответе API по ключу 'homeworks'
+    """
     logging.info("Проверка ответа API на корректность")
     if not isinstance(response, dict):
         raise TypeError("Ответ API не является dict")
@@ -93,8 +94,11 @@ def check_response(response):
     return homeworks
 
 
-def parse_status(homework):
-    """Извлекает из информации о  домашней работе."""
+def parse_status(homework: dict) -> str:
+    """Извлекает из информации о конкретной домашней работе статус этой работы.
+    В случае успеха, функция возвращает подготовленную для отправки
+    в Telegram строку.
+    """
     logging.info("Проводим проверки и извлекаем статус работы")
     if "homework_name" not in homework:
         raise KeyError("Нет ключа homework_name в ответе API")
@@ -109,8 +113,16 @@ def parse_status(homework):
     )
 
 
+def check_tokens() -> bool:
+    """Проверяем, что есть все токены.
+    Если нет хотя бы одного, то останавливаем бота.
+    """
+    logging.info("Проверка наличия всех токенов")
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+
+
 def main():
-    """Функция main в ней описана основная логика работы программы."""
+    """Основная логика работы бота."""
     if not check_tokens():
         message = "Отсутствует токен. Бот остановлен!"
         logging.critical(message)
@@ -147,9 +159,9 @@ def main():
             if message != prev_msg:
                 send_message(bot, message)
                 prev_msg = message
+
         finally:
-            current_timestamp = response.get("current_date")
-            time.sleep(RETRY_PERIOD)
+            time.sleep(RETRY_TIME)
 
 
 if __name__ == "__main__":
