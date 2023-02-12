@@ -36,7 +36,10 @@ def send_message(bot, message):
 
 
 def get_api_answer(timestamp):
-    timestamp = timestamp
+    """Отправляем запрос к API и получаем список домашних работ.
+    Также проверяем, что эндпоинт отдает статус 200.
+    """
+    timestamp = timestamp or int(time.time())
     headers = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
     endpoint = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
     params = {"from_date": timestamp}
@@ -58,7 +61,8 @@ def get_api_answer(timestamp):
 
 
 def check_response(response: dict) -> list:
-    """We get from the response from the API, we log all surprises."""
+    """We get from the response from the API, 
+    we log all surprises."""
     logger.debug("We start checking the response from the server.")
     if not isinstance(response, dict):
         raise TypeError(
