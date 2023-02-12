@@ -43,7 +43,7 @@ def send_message(bot, message):
         raise SystemError('Ошибка отправки сообщения в Telegramm') from error
 
 
-def get_api_answer(timestamp):
+def get_api_answer(current_timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса."""
     params = {'from_date': current_timestamp}
     try:
