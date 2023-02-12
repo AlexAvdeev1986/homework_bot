@@ -73,15 +73,15 @@ def check_response(response):
 
 def parse_status(homework):
     """Извлекает из информации о  домашней работе."""
-    homework_name = homework.get('homework_name')
+    homework_name = homework.get("homework_name")
     if not homework_name:
-        raise KeyError('There is no homework_name key in the list.')
-    homework_status = homework.get('status')
-    homework_comment = homework.get('reviewer_comment')
+        raise KeyError("There is no homework_name key in the list.")
+    homework_status = homework.get("status")
+    homework_comment = homework.get("reviewer_comment")
     if not homework_status:
-        raise KeyError('There is no status key in the list.')
+        raise KeyError("There is no status key in the list.")
     if homework_status not in HOMEWORK_VERDICTS:
-        raise ValueError('Unknown homework status.')
+        raise ValueError("Unknown homework status.")
     verdict = HOMEWORK_VERDICTS.get(homework_status)
     return f'Изменился статус проверки работы "{homework_name}" . {verdict} {homework_comment}'
 
