@@ -16,7 +16,7 @@ PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-RETRY_TIME = 600
+RETRY_PERIOD = 600
 
 HOMEWORK_VERDICTS = {
     "approved": "Работа проверена: ревьюеру всё понравилось. Ура!",
@@ -106,7 +106,7 @@ def main() -> None:
     """The main logic of the bot."""
     logger.debug("Start the bot...")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time()) - RETRY_TIME
+    current_timestamp = int(time.time()) - RETRY_PERIOD
     last_message = None
     last_message_error = None
     if not check_tokens():
@@ -144,7 +144,7 @@ def main() -> None:
                     "sending message canceled"
                 )
         finally:
-            time.sleep(RETRY_TIME)
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == "__main__":
