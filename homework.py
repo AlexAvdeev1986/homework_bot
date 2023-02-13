@@ -94,7 +94,8 @@ def parse_status(homework: dict) -> str:
     if homework_status not in HOMEWORK_VERDICTS:
         raise ValueError("Unknown homework status.")
     verdict = HOMEWORK_VERDICTS.get(homework_status)
-    return f'Homework verification status' f'{homework_name}". {verdict} {homework_comment}'
+    return f'Homework verification status'\
+           f'{homework_name}". {verdict} {homework_comment}'
 
 
 def check_tokens() -> bool:
