@@ -26,7 +26,7 @@ HOMEWORK_VERDICTS = {
 
 
 def send_message(bot: telegram.bot.Bot, message: str) -> None:
-    """The function of sending a message, we log the success and error of sending."""
+    """The function of sending a message"""
     logger.debug("Trying to send a message to Telegram.")
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
