@@ -1,28 +1,16 @@
-class NotForSending(Exception):
-    """Не для пересылки в телеграм."""
+class TokenNotFoundException(Exception):
+    """Обработка исключения при отсуствии хотя бы одного из токенов."""
+
     pass
 
 
-class ProblemDescriptions(Exception):
-    """Описания проблемы."""
+class ChatNotFoundException(Exception):
+    """Обработка исключения при неверном chat_id."""
+
     pass
 
 
-class InvalidResponseCode(Exception):
-    """Не верный код ответа."""
-    pass
+class EndPointIsNotAvailiable(Exception):
+    """Обработка исключения при недоступности ENDPOINT API."""
 
-
-class ConnectinError(Exception):
-    """Не верный код ответа."""
-    pass
-
-
-class EmptyResponseFromAPI(NotForSending):
-    """Пустой ответ от API."""
-    pass
-
-
-class TelegramError(NotForSending):
-    """Ошибка телеграма."""
     pass

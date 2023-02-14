@@ -1,3 +1,0 @@
-2023-02-14 19:49:14,503, INFO, Путь - /home/alex86/Рабочий стол/homework_bot/homework.py, Файл - homework.py, Функция - get_api_answer, Номер строки - 53, Начало запроса: url = https://practicum.yandex.ru/api/user_api/homework_statuses/,headers = {'Authorization': 'OAuth y0_AgAAAABiXjs4AAYckQAAAADcEUWwpE5u6RjPT5G6KKGlM5DXvhf5g0g'},params = {'from_date': 1676393354}
-2023-02-14 19:49:15,338, INFO, Путь - /home/alex86/Рабочий стол/homework_bot/homework.py, Файл - homework.py, Функция - send_message, Номер строки - 32, Начало отправки
-2023-02-14 19:49:15,687, INFO, Путь - /home/alex86/Рабочий стол/homework_bot/homework.py, Файл - homework.py, Функция - send_message, Номер строки - 41, Сообщение отправлено  , Нет новых статусов работ.
