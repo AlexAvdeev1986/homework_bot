@@ -165,4 +165,3 @@ if __name__ == '__main__':
     handler = logging.StreamHandler(stream=sys.stdout)
     logger.addHandler(handler)
     main()
-    
