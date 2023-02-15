@@ -41,9 +41,9 @@ def send_message(bot, message):
         raise SystemError('Ошибка отправки сообщения в Telegramm') from error
 
 
-def get_api_answer(current_timestamp):
+def get_api_answer(timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса."""
-    params = {'from_date': current_timestamp}
+    params = {'from_date': timestamp}
     try:
         hw_status = requests.get(ENDPOINT, headers=HEADERS, params=params)
         if hw_status.status_code != HTTPStatus.OK:
