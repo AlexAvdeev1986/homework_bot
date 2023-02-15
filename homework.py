@@ -115,14 +115,12 @@ def main():
 
 if __name__ == '__main__':
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         filename='homework.log',
-        format='%(asctime)s, %(levelname)s, %(message)s'
-    )
+        format='%(asctime)s, %(levelname)s, %(name)s, %(message)s')
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    streamHandler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
-    streamHandler.setFormatter(formatter)
-    logger.addHandler(streamHandler)
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler(stream=sys.stdout)
+    logger.addHandler(handler)
     main()
+    
