@@ -36,3 +36,4 @@ def check_default_var_exists(scope: ModuleType, var_name: str) -> None:
     assert not callable(var), (
         f'{var_name} должна быть переменной, а не функцией.'
     )
+
