@@ -88,14 +88,14 @@ def check_tokens():
 def main():
     """Функция main в ней описана основная логика работы программы."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
+    timestamp = int(time.time())
     ERROR_CACHE_MESSAGE = ''
     if not check_tokens():
         logger.critical(TOKEN_ERROR)
         sys.exit(TOKEN_ERROR)
     while True:
         try:
-            response = get_api_answer(current_timestamp)
+            response = get_api_answer(timestamp)
             hw_list = check_response(response)
             if hw_list:
                 send_message(bot, parse_status(hw_list[0]))
@@ -109,7 +109,7 @@ def main():
                 send_message(bot, message_error)
                 ERROR_CACHE_MESSAGE = message_error
         finally:
-            current_timestamp = response.get('current_date')
+            timestamp = response.get('current_date')
             time.sleep(RETRY_TIME)
 
 
