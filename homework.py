@@ -34,7 +34,6 @@ TOKEN_ERROR = 'Oшибка переменных окружения'
 
 def send_message(bot, message):
     """Отправляет сообщение в Telegram чат."""
-    logger.debug('Trying to send a message to Telegram.')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.info(f'Сообщение в чат {TELEGRAM_CHAT_ID}: {message}')
