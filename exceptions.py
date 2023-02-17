@@ -1,23 +1,43 @@
-class HTTPRequestError(Exception):
-    def __init__(self, response):
-        message = (
-            f'Эндпоинт {response.url} недоступен. '
-            f'Код ответа API: {response.status_code}]'
-        )
-        super().__init__(message)
+"""Module with custom exceptions."""
 
 
-class ParseStatusError(Exception):
-    def __init__(self, text):
-        message = (
-            f'Парсинг ответа API: {text}'
-        )
-        super().__init__(message)
+class SendMessageFailure(Exception):
+    """Send message failure exception."""
+
+    pass
 
 
-class CheckResponseError(Exception):
-    def __init__(self, text):
-        message = (
-            f'Проверка ответа API: {text}'
-        )
-        super().__init__(message)
+class APIResponseStatusCodeException(Exception):
+    """API status code exception."""
+
+    pass
+
+
+class CheckResponseException(Exception):
+    """Wrong API response format exception."""
+
+    pass
+
+
+class UnknownHWStatusException(Exception):
+    """Unknown homework status exception."""
+
+    pass
+
+
+class MissingRequiredTokenException(Exception):
+    """Environment variables unavaliable exception."""
+
+    pass
+
+
+class IncorrectAPIResponseException(Exception):
+    """Incorrect API response exception."""
+
+    pass
+
+
+class EmptyHWNameOrStatus(Exception):
+    """None homework name or status exception."""
+
+    pass
