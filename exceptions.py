@@ -1,18 +1,23 @@
-class WrongResponseCode(Exception):
-    """Неверный ответ API."""
-    pass
+class HTTPRequestError(Exception):
+    def __init__(self, response):
+        message = (
+            f'Эндпоинт {response.url} недоступен. '
+            f'Код ответа API: {response.status_code}]'
+        )
+        super().__init__(message)
 
 
-class NotForSend(Exception):
-    """Исключение не для пересылки в telegram."""
-    pass
+class ParseStatusError(Exception):
+    def __init__(self, text):
+        message = (
+            f'Парсинг ответа API: {text}'
+        )
+        super().__init__(message)
 
 
-class EmptyResponseFromAPI(NotForSend):
-    """Пустой ответ API."""
-    pass
-
-
-class TelegramError(NotForSend):
-    """Ошибка отправки сообщения в telegram."""
-    pass
+class CheckResponseError(Exception):
+    def __init__(self, text):
+        message = (
+            f'Проверка ответа API: {text}'
+        )
+        super().__init__(message)

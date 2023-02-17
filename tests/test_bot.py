@@ -512,7 +512,7 @@ class TestHomework:
 
             def valid_response_json():
                 data = [{
-                    "homework": [
+                    "homeworks": [
                         {
                             'homework_name': 'hw123',
                             'status': 'approved'
