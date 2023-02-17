@@ -94,8 +94,8 @@ def parse_status(homework):
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
-def extracted_from_parse_status(arg0, arg1):
-    code_api_msg = f"{arg0}{arg1}"
+def extracted_from_parse_status(arg0,arg1):
+    code_api_msg = f"{arg0}. {arg1}"
     logger.error(code_api_msg)
     raise UndocumentedStatusError(code_api_msg)
 
