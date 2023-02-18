@@ -26,7 +26,7 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-RETRY_TIME = 600
+RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -159,8 +159,18 @@ def main():
         else:
             current_timestamp = response['current_date']
         finally:
-            time.sleep(RETRY_TIME)
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.DEBUG,
+        filename='bot.log',
+        format='%(asctime)s, %(levelname)s, %(message)s'
+    )
+    logger.setLevel(logging.DEBUG)
+    streamHandler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
+    streamHandler.setFormatter(formatter)
+    logger.addHandler(streamHandler)
     main()
