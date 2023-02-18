@@ -163,4 +163,14 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.DEBUG,
+        filename='bot.log',
+        format='%(asctime)s, %(levelname)s, %(message)s'
+    )
+    logger.setLevel(logging.DEBUG)
+    streamHandler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
+    streamHandler.setFormatter(formatter)
+    logger.addHandler(streamHandler)
     main()
