@@ -31,7 +31,7 @@ ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_verdict/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 
-HOMEWORK_STATUSES = {
+HOMEWORK_VERDICTS = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
@@ -63,7 +63,7 @@ def get_api_answer(current_timestamp):
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
-        homework_statuses = requests.get(
+        homework_verdict = requests.get(
             url=ENDPOINT,
             headers=HEADERS,
             params=params
@@ -71,12 +71,12 @@ def get_api_answer(current_timestamp):
     except requests.exceptions.RequestException:
         error_message = f'Сбой обращения к "{ENDPOINT}"'
         log_raise_error(error_message)
-    if homework_statuses.status_code != HTTPStatus.OK.value:
+    if homework_verdict.status_code != HTTPStatus.OK.value:
         error_message = (f'"{ENDPOINT}" недоступен. '
-                         f'Код ответа API: "{homework_statuses.status_code}"'
+                         f'Код ответа API: "{homework_verdict.status_code}"'
                          )
         log_raise_error(error_message)
-    return homework_statuses.json()
+    return homework_verdict.json()
 
 
 def check_response(response):
@@ -105,14 +105,14 @@ def parse_status(homework):
     """Извлечение статуса д/р, возврат вердикт словаря HOMEWORK_STATUSES."""
     try:
         homework_name = homework['homework_name']
-        homework_status = homework['status']
+        homework_verdict = homework['status']
     except KeyError:
         raise KeyError('Статус работы не документирован')
-    if homework_status not in HOMEWORK_STATUSES:
-        error_message = (f'Статус "{homework_status}" '
+    if homework_verdict not in HOMEWORK_VERDICTS:
+        error_message = (f'Статус "{homework_verdict}" '
                          f'работы "{homework_name}" не найден')
         log_raise_error(error_message)
-    verdict = HOMEWORK_STATUSES[homework_status]
+    verdict = HOMEWORK_VERDICTS[homework_verdict]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
