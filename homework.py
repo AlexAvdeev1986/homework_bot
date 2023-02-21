@@ -19,7 +19,7 @@ load_dotenv()
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-TELEGRAM_RETRY_TIME: int = 600
+RETRY_PERIOD: int = 600
 ERROR_CACHE_LIFETIME: int = 60 * 60 * 24
 
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
@@ -159,7 +159,7 @@ def main():
         except Exception as error:
             handle_error(bot, error)
         finally:
-            time.sleep(TELEGRAM_RETRY_TIME)
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
