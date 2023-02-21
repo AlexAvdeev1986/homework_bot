@@ -12,7 +12,7 @@ class MockResponseGET:
                  current_timestamp=None, http_status=HTTPStatus.OK, **kwargs):
         assert (
             url.startswith(
-                'https://practicum.yandex.ru/api/user_api/homework_statuses'
+                'https://practicum.yandex.ru/api/user_api/homework_verdicts/'
             )
         ), (
             'Проверьте, что вы делаете запрос на правильный '

@@ -29,7 +29,7 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 RETRY_PERIOD = 600
-ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
+ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_verdicts/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 gif_ok = "https://i.gifer.com/C6b.gif"
 gif_fix = "https://partnerkin.com/storage/files/file_1573820864.gif"
