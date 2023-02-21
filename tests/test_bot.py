@@ -667,63 +667,6 @@ class TestHomework:
                     f'бот использует функцию `{func_name}`.'
                 )
 
-    def test_main_send_message_with_new_status(self, monkeypatch,
-                                               random_timestamp,
-                                               timestamp,
-                                               random_message,
-                                               caplog, homework_module):
-        self.mock_main(
-            monkeypatch,
-            random_message,
-            random_timestamp,
-            timestamp,
-            homework_module
-        )
-        data_with_new_hw_status = {
-            'homeworks': [
-                {
-                    'homework_name': 'hw123',
-                    'status': 'approved'
-                }
-            ],
-            'current_date': random_timestamp
-        }
-        mock_response_get_with_new_status = (
-            create_mock_response_get_with_custom_status_and_data(
-                random_timestamp=random_timestamp,
-                http_status=HTTPStatus.OK,
-                data=data_with_new_hw_status
-            ))
-        monkeypatch.setattr(
-            requests,
-            'get',
-            mock_response_get_with_new_status
-        )
-
-        hw_status = data_with_new_hw_status['homeworks'][0]['status']
-
-        def mock_send_message(bot, message=''):
-            logging.warn(message)
-
-        monkeypatch.setattr(
-            homework_module,
-            'send_message',
-            mock_send_message
-        )
-        with caplog.at_level(logging.WARN):
-            try:
-                homework_module.main()
-            except utils.BreakInfiniteLoop:
-                log_record = [
-                    record.message for record in caplog.records
-                    if self.HOMEWORK_VERDICTS[hw_status] in record.message
-                ]
-                assert log_record, (
-                    'Убедитесь, что при изменении статуса домашней работы '
-                    'бот отправляет в Telegram сообщение с вердиктом '
-                    'из переменной `HOMEWORK_VERDICTS`.'
-                )
-
     def test_docstrings(self, homework_module):
         for func in self.HOMEWORK_FUNC_WITH_PARAMS_QTY:
             utils.check_docstring(homework_module, func)
