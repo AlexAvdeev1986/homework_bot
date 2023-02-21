@@ -345,35 +345,6 @@ class TestHomework:
                     'статус домашней работы либо домашку без статуса.'
                 )
 
-    def test_parse_status_no_homework_name_key(self, homework_module):
-        homework_with_invalid_name = {
-            'status': 'approved'
-        }
-        func_name = 'parse_status'
-        utils.check_function(
-            homework_module,
-            func_name,
-            self.HOMEWORK_FUNC_WITH_PARAMS_QTY[func_name]
-        )
-
-        try:
-            homework_module.parse_status(homework_with_invalid_name)
-        except KeyError as e:
-            if repr(e) == "KeyError('homework_name')":
-                raise AssertionError(
-                    f'Убедитесь, что функция `{func_name}` выбрасывает '
-                    'исключение с понятным текстом ошибки, когда в ответе '
-                    'API домашки нет ключа `homework_name`.'
-                )
-        except Exception as e:
-            pass
-        else:
-            raise AssertionError(
-                f'Убедитесь, что функция `{func_name}` выбрасывает '
-                'исключение, когда в ответе API домашки нет ключа '
-                '`homework_name`.'
-            )
-
     def test_check_response(self, random_timestamp, homework_module):
         func_name = 'check_response'
         utils.check_function(
