@@ -31,8 +31,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 RETRY_PERIOD = 600
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
-gif_ok = "https://i.gifer.com/C6b.gif"
-gif_fix = "https://partnerkin.com/storage/files/file_1573820864.gif"
+
 
 HOMEWORK_VERDICTS = {
     "approved": "Работа проверена: ревьюеру всё понравилось. Ура!",
@@ -69,11 +68,11 @@ def send_message_by_status(bot, status, message):
     if homework_status == "approved":
         comment = status[0].get("reviewer_comment")
         message = f"{message}\nКомментарий:\n{comment}"
-        send_animation(bot, message, gif_ok)
+        send_animation(bot, message)
     elif homework_status == "rejected":
         comment = status[0].get("reviewer_comment")
         message = f"{message}\nКомментарий:\n{comment}"
-        send_animation(bot, message, gif_fix)
+        send_animation(bot, message)
     else:
         send_message(bot, message)
 

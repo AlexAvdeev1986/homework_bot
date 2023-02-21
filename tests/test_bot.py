@@ -147,7 +147,7 @@ class TestHomework:
             '(`logging.getLogger()`).'
         )
 
-    def test_request_get_call(self, monkeypatch, current_timestamp,
+    def test_request_get_call(self, monkeypatch, timestamp,
                               homework_module):
         func_name = 'get_api_answer'
         utils.check_function(
@@ -157,7 +157,7 @@ class TestHomework:
         )
 
         def check_request_get_call(url,
-                                   current_timestamp=current_timestamp,
+                                   timestamp=timestamp,
                                    **kwargs):
             expected_url = (
                 'https://practicum.yandex.ru/api/user_api/homework_statuses'
@@ -184,7 +184,7 @@ class TestHomework:
             )
             try:
                 from_date = int(kwargs['params']['from_date'])
-                assert from_date == int(current_timestamp), (
+                assert from_date == int(timestamp), (
                     'Проверьте, что в параметре `from_date` передан timestamp.'
                 )
             except ValueError:
@@ -194,14 +194,14 @@ class TestHomework:
 
         monkeypatch.setattr(requests, 'get', check_request_get_call)
         try:
-            homework_module.get_api_answer(current_timestamp)
+            homework_module.get_api_answer(timestamp)
         except AssertionError as e:
             raise ArithmeticError(str(e))
         except Exception:
             pass
 
     def test_get_api_answers(self, monkeypatch, random_timestamp,
-                             current_timestamp, homework_module):
+                             timestamp, homework_module):
         func_name = 'get_api_answer'
         utils.check_function(
             homework_module,
@@ -212,12 +212,12 @@ class TestHomework:
         def mock_response_get(*args, **kwargs):
             return utils.MockResponseGET(
                 *args, random_timestamp=random_timestamp,
-                current_timestamp=current_timestamp, **kwargs
+                timestamp=timestamp, **kwargs
             )
 
         monkeypatch.setattr(requests, 'get', mock_response_get)
 
-        result = homework_module.get_api_answer(current_timestamp)
+        result = homework_module.get_api_answer(timestamp)
         assert isinstance(result, dict), (
             f'Проверьте, что функция `{func_name}` возвращает словарь.'
         )
@@ -225,7 +225,7 @@ class TestHomework:
     @pytest.mark.parametrize('response', NOT_OK_RESPONSES.values())
     def test_get_not_200_status_response(self,
                                          monkeypatch,
-                                         current_timestamp,
+                                         timestamp,
                                          response,
                                          homework_module):
         func_name = 'get_api_answer'
@@ -237,7 +237,7 @@ class TestHomework:
 
         monkeypatch.setattr(requests, 'get', response)
         try:
-            homework_module.get_api_answer(current_timestamp)
+            homework_module.get_api_answer(timestamp)
         except Exception:
             pass
         else:
@@ -246,7 +246,7 @@ class TestHomework:
                 'ситуация, когда API домашки возвращает код, отличный от 200.'
             )
 
-    def test_get_api_answer_with_request_exception(self, current_timestamp,
+    def test_get_api_answer_with_request_exception(self, timestamp,
                                                    monkeypatch,
                                                    homework_module):
         func_name = 'get_api_answer'
@@ -261,7 +261,7 @@ class TestHomework:
 
         monkeypatch.setattr(requests, 'get', mock_request_get_with_exception)
         try:
-            homework_module.get_api_answer(current_timestamp)
+            homework_module.get_api_answer(timestamp)
         except requests.RequestException:
             raise AssertionError(
                 f'Убедитесь, что в функции `{func_name}` обрабатывается '
@@ -536,7 +536,7 @@ class TestHomework:
         )
 
     def mock_main(self, monkeypatch, random_message, random_timestamp,
-                  current_timestamp, homework_module):
+                  timestamp, homework_module):
         """
         Mock all functions inside main() which need environment vars to work
         correctly.
@@ -584,20 +584,20 @@ class TestHomework:
         def mock_response_get(*args, **kwargs):
             return utils.MockResponseGET(
                 *args, random_timestamp=random_timestamp,
-                current_timestamp=current_timestamp, **kwargs
+                timestamp=timestamp, **kwargs
             )
 
         monkeypatch.setattr(requests, 'get', mock_response_get)
 
     def test_main_without_env_vars_raise_exception(
-            self, caplog, monkeypatch, random_timestamp, current_timestamp,
+            self, caplog, monkeypatch, random_timestamp, timestamp,
             random_message, homework_module
     ):
         self.mock_main(
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module
         )
         homework_module.PRACTICUM_TOKEN = None
@@ -620,13 +620,13 @@ class TestHomework:
                 pass
 
     def test_main_send_request_to_api(self, monkeypatch, random_timestamp,
-                                      current_timestamp, random_message,
+                                      timestamp, random_message,
                                       caplog, homework_module):
         self.mock_main(
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module
         )
         homework_module.PRACTICUM_TOKEN = 'sometoken'
@@ -647,14 +647,14 @@ class TestHomework:
 
     def test_main_check_response_is_called(self, monkeypatch,
                                            random_timestamp,
-                                           current_timestamp,
+                                           timestamp,
                                            random_message,
                                            caplog, homework_module):
         self.mock_main(
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module
         )
         homework_module.PRACTICUM_TOKEN = 'sometoken'
@@ -698,14 +698,14 @@ class TestHomework:
 
     def test_main_send_message_with_new_status(self, monkeypatch,
                                                random_timestamp,
-                                               current_timestamp,
+                                               timestamp,
                                                random_message,
                                                caplog, homework_module):
         self.mock_main(
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module
         )
         data_with_new_hw_status = {
@@ -760,4 +760,3 @@ class TestHomework:
 
 if __name__ == '__main__':
     pytest.main()
-    
