@@ -1,26 +1,23 @@
-class CustomTlgError(Exception):
-    """Base class for custom errors with tlg notification."""
+class SendMessageException(Exception):
+    """"Ошибка при при отправке в Telegram"""
+    pass
 
 
-class CustomNoTlgError(Exception):
-    """Base class for custom errors without tlg notification."""
+class APIAnswerException(Exception):
+    """"Ошибка при запросе к эндпоинту API-сервиса"""
+    pass
 
 
-class CustomRequestError(CustomTlgError):
-    """Class for API request errors."""
+class CheckAPIException(Exception):
+    """"Ошибка при ответе от API-сервиса"""
+    pass
 
 
-class CustomTypeError(CustomTlgError):
-    """Class for type errors."""
+class ParseStatusException(Exception):
+    """"Ошибка при извлечении статуса домашней работы"""
+    pass
 
 
-class CustomKeyError(CustomTlgError):
-    """Class for key errors."""
-
-
-class CustomTokenValidationError(CustomNoTlgError):
-    """Class for token validation errors."""
-
-
-class CustomTlgSendMessageError(CustomNoTlgError):
-    """Class for telegram send message errors."""
+class CheсkTokensException(Exception):
+    """"Ошибка при отсуствие токена"""
+    pass
