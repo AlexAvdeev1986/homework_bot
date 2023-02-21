@@ -74,7 +74,7 @@ class MockTelegramBot:
 
 
 class TestHomework:
-    HOMEWORK_STATUSES = {
+    HOMEWORK_VERDICTS = {
         'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
         'reviewing': 'Работа взята на проверку ревьюером.',
         'rejected': 'Работа проверена: у ревьюера есть замечания.'
@@ -271,7 +271,7 @@ class TestHomework:
             f'функции `{func_name}`'
         )
         status = 'approved'
-        assert result.endswith(self.HOMEWORK_STATUSES[status]), (
+        assert result.endswith(self.HOMEWORK_VERDICTS[status]), (
             'Проверьте, что возвращаете правильный вердикт для статуса '
             f'`{status}` в возврате функции `{func_name}`'
         )
@@ -285,7 +285,7 @@ class TestHomework:
             'в возврате функции parse_status()'
         )
         assert result.endswith(
-            self.HOMEWORK_STATUSES[status]
+            self.HOMEWORK_VERDICTS[status]
         ), (
             'Проверьте, что возвращаете правильный вердикт для статуса '
             f'`{status}` в возврате функции parse_status()'
@@ -371,7 +371,7 @@ class TestHomework:
                     'при недокументированном статусе домашней работы в ответе от API'
                 )
             if status_message is not None:
-                for hw_status in self.HOMEWORK_STATUSES:
+                for hw_status in self.HOMEWORK_VERDICTS:
                     assert not status_message.endswith(hw_status), (
                         f'Убедитесь, что функция `{func_name} не возвращает корректный '
                         'ответ при получении домашки с недокументированным статусом'
@@ -419,7 +419,7 @@ class TestHomework:
                     'при отсутствии ключа `homework_status` домашней работы в ответе от API'
                 )
             if status_message is not None:
-                for hw_status in self.HOMEWORK_STATUSES:
+                for hw_status in self.HOMEWORK_VERDICTS:
                     assert not status_message.endswith(hw_status), (
                         f'Убедитесь, что функция `{func_name} не возвращает корректный '
                         'ответ при получении домашки без ключа `homework_status`'
@@ -640,4 +640,3 @@ class TestHomework:
                 f'Убедитесь, что в функции `{func_name}` обрабатываете ситуацию, '
                 'когда API возвращает код, отличный от 200'
             )
-            
