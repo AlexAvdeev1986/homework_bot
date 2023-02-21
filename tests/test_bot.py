@@ -160,7 +160,7 @@ class TestHomework:
                                    current_timestamp=current_timestamp,
                                    **kwargs):
             expected_url = (
-                'https://practicum.yandex.ru/api/user_api/homework_statuses'
+                'https://practicum.yandex.ru/api/user_api/homework_verdict'
             )
             assert url.startswith(expected_url), (
                 'Проверьте адрес, на который отправляются запросы.'
