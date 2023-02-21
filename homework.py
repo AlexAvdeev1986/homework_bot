@@ -28,7 +28,7 @@ PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-RETRY_TIME = 600
+RETRY_PERIOD = 600
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 gif_ok = "https://i.gifer.com/C6b.gif"
@@ -143,7 +143,7 @@ def main():
 
     while True:
         try:
-            current_timestamp = int(time.time()) - RETRY_TIME
+            current_timestamp = int(time.time()) - RETRY_PERIOD
             answer = get_api_answer(current_timestamp)
             homeworks = check_response(answer)
             if homeworks:
@@ -157,7 +157,7 @@ def main():
                 send_message(bot, message)
                 send_msg.add(message)
         finally:
-            time.sleep(RETRY_TIME)
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == "__main__":
