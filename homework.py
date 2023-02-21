@@ -27,7 +27,7 @@ ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 URL = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 
-HOMEWORK_STATUSES = {
+HOMEWORK_VERDICTS = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
@@ -105,7 +105,7 @@ def parse_status(homework: Dict[str, Union[int, float, str]]) -> str:
     except Exception:
         raise KeyError('В ответе API отсутствует status')
     try:
-        verdict = HOMEWORK_STATUSES[homework_status]
+        verdict = HOMEWORK_VERDICTS[homework_status]
     except Exception:
         raise StatusTypeError('Недокументированный статус домашней работы')
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
