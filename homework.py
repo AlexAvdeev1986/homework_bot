@@ -17,7 +17,7 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-RETRY_PERIOD = 600  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
+RETRY_PERIOD = 10 * 60  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -40,21 +40,11 @@ def check_tokens() -> None:
 
     Райзит исключение при потере какого-либо токена.
     """
-    missing_tokens = [
-        token
-        for token in ('PRACTICUM_TOKEN', 'TELEGRAM_TOKEN', 'TELEGRAM_CHAT_ID')
-        if token not in globals() or globals().get(token) is None
-    ]
-    if missing_tokens:
-        logging.critical(
-            'Отсутствуют обязательные токены - %s',
-            *missing_tokens,
-        )
-        raise KeyError(
-            f'Не заданы следующие токены '
-            f'- {" ".join(token for token in missing_tokens)},',
-        )
-    logging.info('Все необходимые токены получены')
+    logging.debug("Старт функции проверки переменных окружения.")
+    check = all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+    if not check:
+        logging.critical("Проверьте переменные окружения", exc_info=False)
+    return check
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
@@ -133,17 +123,16 @@ def parse_status(homework: Dict[str, Union[int, str]]) -> str:
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
     """
-    try:
-        name, status = homework['homework_name'], homework['status']
-    except KeyError:
-        logging.error('Один или оба ключа отсутствуют')
-        raise NoHomeworkDetectedError('Домашней работы нет')
-    try:
-        return (f'Изменился статус проверки работы "{name}". '
-                f'{HOMEWORK_VERDICTS[status]}')
-    except KeyError:
-        logging.error('Неожиданный статус домашней работы')
-        raise KeyError('Статуса %s нет в словаре', status)
+    logging.debug("Старт функции проверки статуса работы.")
+    homework_name = homework.get("homework_name")
+    homework_status = homework.get("status")
+    if homework_status not in HOMEWORK_VERDICTS:
+        message = f'Недокументированный статус работы - "{homework_status}"'
+        logging.error(message)
+        raise KeyError(message)
+    verdict = HOMEWORK_VERDICTS.get(homework_status)
+    return f'Изменился статус проверки работы "{homework_name}". {verdict}'
+
 
 
 def main() -> None:
@@ -157,11 +146,13 @@ def main() -> None:
             response = get_api_answer(timestamp=timestamp)
             homeworks = check_response(response)
             if homeworks:
+                timestamp = response['current_date']
                 send_message(
                     bot,
                     parse_status(response.get('homeworks')[0]),
                 )
-            timestamp = response['current_date']
+            else:
+                logging.debug("Новый статус отсутствует.")
         except Exception as error:
             if error != error_message:
                 message = f'Сбой в работе программы: {error}'
