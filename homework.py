@@ -9,7 +9,7 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import CantSendMessageError, NoHomeworkDetectedError
+from exceptions import CantSendMessageError
 
 load_dotenv()
 
