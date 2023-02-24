@@ -30,25 +30,14 @@ HOMEWORK_VERDICTS = {
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stdout,
-    format="%(asctime)s - %(levelname)s - "
-    "%(funcName)s - %(lineno)d - %(message)s",
+    format="%(asctime)s - %(levelname)s - " "%(funcName)s - %(lineno)d - %(message)s",
 )
-
-
-def check_tokens() -> None:
-    """Проверяет, что токены получены.
-
-    Райзит исключение при потере какого-либо токена.
-    """
-    import logging
 
 
 def check_tokens() -> bool:
     """Проверяет, что все необходимые токены получены."""
     required_tokens = ["PRACTICUM_TOKEN", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID"]
-    missing_tokens = [
-        token for token in required_tokens if not globals().get(token)
-    ]
+    missing_tokens = [token for token in required_tokens if not globals().get(token)]
     if missing_tokens:
         logging.critical(
             "Отсутствуют обязательные токены: %s", ", ".join(missing_tokens)
