@@ -47,7 +47,13 @@ python3 homework.py createsuperuser
 
 #Запуск:
 
-python3 manage.py runserver
+python3 homework.py runserver
+
+TEST
+pip install robotframework
+
+
+
 
 АВТО ИСПРАВЛЕНИЕ!!!! https://pypi.org/project/black/ Автоформаттеры Автоформаттеры – это программы, которые автоматически реорганизуют ваш код для соответствия PEP 8. Одна из таких программ — black. Она автоматически форматирует код для приведения его в соответствие с большинством правил PEP 8. Единственное, она ограничивает длину строки до 88 символов, а не до 79, как рекомендовано стандартом. Однако вы можете изменить это, добавив флаг командной строки, как в примере ниже.
 
@@ -55,18 +61,18 @@ python3 manage.py runserver
 
 $ pip install black
 
-ЗАПУСК black posts
+ЗАПУСК black homework.py
 
 Если вы хотите изменить ограничение длины строки, можно использовать флаг --line-length:
 
-$ black --line-length=79 posts
+$ black --line-length=79 homework.py
 
 
 # Установка пакета Coverage
 pip install coverage
 
 # Перейдите в рабочую директорию проекта (где хранится manage.py) и запустите coverage: выполните 
-$ coverage run --source='posts,users' manage.py test -v 2
+$ coverage run --source='posts,users' homework.py test -v 2
 
 # покажет отчёт
 coverage report
@@ -81,7 +87,7 @@ $ coverage run этот отчёт будет перезаписан.
 
 Выборочный запуск тестов
 # Запустит все тесты проекта
-python3 manage.py test
+python3 homework.py test
 
 # Запустит только тесты в приложении posts
 python3 manage.py test posts
@@ -97,3 +103,4 @@ python3 manage.py test posts.tests.test_urls.StaticURLTests
 python3 manage.py test posts.tests.test_urls.StaticURLTests.test_homepage 
 
 python3 manage.py test -v 2
+
