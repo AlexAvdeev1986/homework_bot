@@ -17,7 +17,7 @@ PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-RETRY_PERIOD = 600  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
+RETRY_PERIOD = 60 * 10  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 
@@ -138,18 +138,20 @@ def parse_status(homework: Dict[str, Union[int, str]]) -> str:
     райзит исключение.
     """
     try:
-        name, status = homework["homework_name"], homework["status"]
-    except KeyError:
-        logging.error("Один или оба ключа отсутствуют")
-        raise NoHomeworkDetectedError("Домашней работы нет")
-    try:
-        return (
-            f'Изменился статус проверки работы "{name}". '
-            f"{HOMEWORK_VERDICTS[status]}"
-        )
-    except KeyError:
-        logging.error("Неожиданный статус домашней работы")
-        raise KeyError("Статуса %s нет в словаре", status)
+        homework_name = homework.get("homework_name")
+    except KeyError as er:
+        logging.error(er)
+    else:
+        if homework.get("status") == "rejected":
+            verdict = "К сожалению в работе нашлись ошибки."
+        elif homework.get("status") == "reviewing":
+            verdict = "работа взята в ревью"
+        else:
+            verdict = (
+                "Ревьюеру всё понравилось, можно приступать"
+                " к следующему уроку."
+            )
+        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def main() -> None:
@@ -158,21 +160,26 @@ def main() -> None:
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
     error_message = ""
+    last_message = ""
     while True:
         try:
             response = get_api_answer(timestamp=timestamp)
             homeworks = check_response(response)
             if homeworks:
-                send_message(
-                    bot,
-                    parse_status(response.get("homeworks")[0]),
-                )
+                message = parse_status(response.get("homeworks")[0])
+
+                if message != last_message:
+                    send_message(bot, message)
+                    last_message = message
+
             timestamp = response["current_date"]
+
         except Exception as error:
             if error != error_message:
                 message = f"Сбой в работе программы: {error}"
                 send_message(bot, message)
                 error_message = error
+
         finally:
             logging.info("Спящий режим")
             time.sleep(RETRY_PERIOD)
