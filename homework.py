@@ -39,9 +39,7 @@ def check_tokens() -> bool:
     missing_tokens = [
         token
         for token in (
-            "PRACTICUM_TOKEN",
-            "TELEGRAM_TOKEN",
-            "TELEGRAM_CHAT_ID",
+        "PRACTICUM_TOKEN","TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID",
         )
         if token not in globals() or globals().get(token) is None
     ]
@@ -56,12 +54,6 @@ def check_tokens() -> bool:
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
-    """Бот отправляет текст сообщения в телеграм.
-
-    При неудачной попытке отправки сообщения логируется исключение
-    TelegramError и выбрасывается исключение об невозможности
-    отправить сообщение в Telegram.
-    """
     try:
         bot.send_message(
             TELEGRAM_CHAT_ID,
@@ -79,7 +71,6 @@ def get_api_answer(
     timestamp: int,
 ) -> Dict[str, Union[List[Dict[str, Union[int, str]]], int]]:
     """Получает ответ от API.
-
     Райзит исключение при недоступности эндпоинта
     или других сбоях при запросе к нему.
     """
@@ -111,7 +102,6 @@ def check_response(
     response: Dict[str, Union[List[Dict[str, Union[int, str]]], int]]
 ) -> List[Dict[str, Union[int, str]]]:
     """Проверяет, соответствует ли тип входных данных ожидаемому.
-
     Проверяет наличие всех ожидаемых ключей в ответе.
     Райзит TypeError при несоответствии типа данных,
     KeyError - при отсутствии ожидаемого ключа.
@@ -130,7 +120,6 @@ def check_response(
 
 def parse_status(homework: Dict[str, Union[int, str]]) -> str:
     """Проверяет статус домашней работы.
-
     При наличии возвращает сообщение для отправки в Telegram.
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
