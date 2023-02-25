@@ -13,25 +13,25 @@ from exceptions import CantSendMessageError, NoHomeworkDetectedError
 
 load_dotenv()
 
-PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 RETRY_PERIOD = 600  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
-ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
-HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
+ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
+HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 
 HOMEWORK_VERDICTS = {
-    'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
-    'reviewing': 'Работа взята на проверку ревьюером.',
-    'rejected': 'Работа проверена: у ревьюера есть замечания.',
+    "approved": "Работа проверена: ревьюеру всё понравилось. Ура!",
+    "reviewing": "Работа взята на проверку ревьюером.",
+    "rejected": "Работа проверена: у ревьюера есть замечания.",
 }
 
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stdout,
-    format='%(asctime)s - %(levelname)s - '
-    '%(funcName)s - %(lineno)d - %(message)s',
+    format="%(asctime)s - %(levelname)s - "
+    "%(funcName)s - %(lineno)d - %(message)s",
 )
 
 
@@ -40,13 +40,24 @@ def check_tokens() -> None:
 
     Райзит исключение при потере какого-либо токена.
     """
-    required_tokens = ('PRACTICUM_TOKEN', 'TELEGRAM_TOKEN', 'TELEGRAM_CHAT_ID')
-    if all(token in globals() and globals().get(token) is not None for token in required_tokens):
-        logging.info('All required tokens are present.')
+    required_tokens = (
+        "PRACTICUM_TOKEN",
+        "TELEGRAM_TOKEN",
+        "TELEGRAM_CHAT_ID",
+    )
+    if all(
+        token in globals() and globals().get(token) is not None
+        for token in required_tokens
+    ):
+        logging.info("All required tokens are present.")
         return True
     else:
-        missing_tokens = [token for token in required_tokens if token not in globals() or globals().get(token) is None]
-        logging.critical('Missing required tokens: %s', *missing_tokens)
+        missing_tokens = [
+            token
+            for token in required_tokens
+            if token not in globals() or globals().get(token) is None
+        ]
+        logging.critical("Missing required tokens: %s", *missing_tokens)
         return False
 
 
@@ -62,9 +73,11 @@ def send_message(bot: telegram.Bot, text: str) -> None:
             text=text,
         )
     except telegram.error.TelegramError:
-        logging.exception('Cбой при отправке сообщения в Telegram')
-        raise CantSendMessageError('Невозможно отправить сообщение в Telegram')
-    logging.debug('Сообщение о статусе домашки отправлено')
+        logging.exception("Cбой при отправке сообщения в Telegram")
+        raise CantSendMessageError(
+            "Невозможно отправить сообщение в Telegram"
+        )
+    logging.debug("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
@@ -78,18 +91,18 @@ def get_api_answer(
         response = requests.get(
             url=ENDPOINT,
             headers=HEADERS,
-            params={'from_date': timestamp},
+            params={"from_date": timestamp},
         )
     except requests.exceptions.RequestException:
-        logging.exception('Сбой при запросе к эндпоинту')
+        logging.exception("Сбой при запросе к эндпоинту")
         raise requests.exceptions.RequestException(
-            'Ошибка при запросе к API: %s',
+            "Ошибка при запросе к API: %s",
             response.status_code,
         )
-    logging.info('Ответ от API получен. Эндпоинт доступен.')
+    logging.info("Ответ от API получен. Эндпоинт доступен.")
     if response.status_code != HTTPStatus.OK:
         logging.error(
-            'Данный эндпоинт недоступен - %s. Код ошибки: %s',
+            "Данный эндпоинт недоступен - %s. Код ошибки: %s",
             response.url,
             response.status_code,
         )
@@ -108,12 +121,14 @@ def check_response(
     """
     if (
         isinstance(response, dict)
-        and all(key for key in ('current_date', 'homeworks'))
-        and isinstance(response.get('homeworks'), list)
+        and all(key for key in ("current_date", "homeworks"))
+        and isinstance(response.get("homeworks"), list)
     ):
-        logging.info('Все ключи из "response" получены и соответствуют норме')
-        return response['homeworks']
-    raise TypeError('Структура данных не соответствует ожиданиям')
+        logging.info(
+            'Все ключи из "response" получены и соответствуют норме'
+        )
+        return response["homeworks"]
+    raise TypeError("Структура данных не соответствует ожиданиям")
 
 
 def parse_status(homework: Dict[str, Union[int, str]]) -> str:
@@ -123,16 +138,18 @@ def parse_status(homework: Dict[str, Union[int, str]]) -> str:
     райзит исключение.
     """
     try:
-        name, status = homework['homework_name'], homework['status']
+        name, status = homework["homework_name"], homework["status"]
     except KeyError:
-        logging.error('Один или оба ключа отсутствуют')
-        raise NoHomeworkDetectedError('Домашней работы нет')
+        logging.error("Один или оба ключа отсутствуют")
+        raise NoHomeworkDetectedError("Домашней работы нет")
     try:
-        return (f'Изменился статус проверки работы "{name}". '
-                f'{HOMEWORK_VERDICTS[status]}')
+        return (
+            f'Изменился статус проверки работы "{name}". '
+            f"{HOMEWORK_VERDICTS[status]}"
+        )
     except KeyError:
-        logging.error('Неожиданный статус домашней работы')
-        raise KeyError('Статуса %s нет в словаре', status)
+        logging.error("Неожиданный статус домашней работы")
+        raise KeyError("Статуса %s нет в словаре", status)
 
 
 def main() -> None:
@@ -140,7 +157,7 @@ def main() -> None:
     check_tokens()
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
-    error_message = ''
+    error_message = ""
     while True:
         try:
             response = get_api_answer(timestamp=timestamp)
@@ -148,18 +165,18 @@ def main() -> None:
             if homeworks:
                 send_message(
                     bot,
-                    parse_status(response.get('homeworks')[0]),
+                    parse_status(response.get("homeworks")[0]),
                 )
-            timestamp = response['current_date']
+            timestamp = response["current_date"]
         except Exception as error:
             if error != error_message:
-                message = f'Сбой в работе программы: {error}'
+                message = f"Сбой в работе программы: {error}"
                 send_message(bot, message)
                 error_message = error
         finally:
-            logging.info('Спящий режим')
+            logging.info("Спящий режим")
             time.sleep(RETRY_PERIOD)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
