@@ -30,7 +30,8 @@ HOMEWORK_VERDICTS = {
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stdout,
-    format="%(asctime)s - %(levelname)s - " "%(funcName)s - %(lineno)d - %(message)s",
+    format="%(asctime)s - %(levelname)s - "
+    "%(funcName)s - %(lineno)d - %(message)s",
 )
 
 
@@ -73,7 +74,9 @@ def send_message(bot: telegram.Bot, text: str) -> None:
         )
     except telegram.error.TelegramError:
         logging.exception("Cбой при отправке сообщения в Telegram")
-        raise CantSendMessageError("Невозможно отправить сообщение в Telegram")
+        raise CantSendMessageError(
+            "Невозможно отправить сообщение в Telegram"
+        )
     logging.debug("Сообщение о статусе домашки отправлено")
 
 
@@ -121,7 +124,9 @@ def check_response(
         and all(key for key in ("current_date", "homeworks"))
         and isinstance(response.get("homeworks"), list)
     ):
-        logging.info('Все ключи из "response" получены и соответствуют норме')
+        logging.info(
+            'Все ключи из "response" получены и соответствуют норме'
+        )
         return response["homeworks"]
     raise TypeError("Структура данных не соответствует ожиданиям")
 
