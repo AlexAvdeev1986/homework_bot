@@ -137,20 +137,12 @@ def parse_status(homework: Dict[str, Union[int, str]]) -> str:
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
     """
-    try:
-        homework_name = homework.get("homework_name")
-    except KeyError as er:
-        logging.error(er)
-    else:
-        if homework.get("status") == "rejected":
-            verdict = "К сожалению в работе нашлись ошибки."
-        elif homework.get("status") == "reviewing":
-            verdict = "работа взята в ревью"
-        else:
-            verdict = (
-                "Всё понравилось, можно приступать" " к следующему уроку."
-            )
-        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    homework_name = homework["homework_name"]
+    for key in HOMEWORK_VERDICTS:
+        if homework["status"] == key:
+            verdict = HOMEWORK_VERDICTS[key]
+            return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    raise KeyError("ошибка данных")
 
 
 def main() -> None:
