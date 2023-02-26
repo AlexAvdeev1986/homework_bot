@@ -43,7 +43,8 @@ def check_tokens() -> None:
 
     Райзит исключение при потере какого-либо токена.
     """
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+    tokens = all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+    return tokens or logging.critical(c.TOKEN_NOT_FOUND.format(tokens))
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
