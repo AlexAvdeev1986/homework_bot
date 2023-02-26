@@ -80,7 +80,8 @@ def send_message(bot: telegram.Bot, text: str) -> None:
         raise CantSendMessageError(
             "Невозможно отправить сообщение в Telegram"
         )
-    logging.debug("Сообщение о статусе домашки отправлено")
+    else:
+        logging.info("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
