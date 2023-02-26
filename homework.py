@@ -34,6 +34,9 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 def check_tokens() -> None:
     """Проверяет, что токены получены.
@@ -77,8 +80,7 @@ def send_message(bot: telegram.Bot, text: str) -> None:
         raise CantSendMessageError(
             "Невозможно отправить сообщение в Telegram"
         )
-    else:
-        logging.info("Сообщение о статусе домашки отправлено")
+    logging.debug("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
