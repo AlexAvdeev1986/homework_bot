@@ -34,6 +34,8 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def check_tokens() -> None:
     """Проверяет, что токены получены.
