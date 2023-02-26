@@ -43,25 +43,7 @@ def check_tokens() -> None:
 
     Райзит исключение при потере какого-либо токена.
     """
-    required_tokens = (
-        "PRACTICUM_TOKEN",
-        "TELEGRAM_TOKEN",
-        "TELEGRAM_CHAT_ID",
-    )
-    if all(
-        token in globals() and globals().get(token) is not None
-        for token in required_tokens
-    ):
-        logging.info("All required tokens are present.")
-        return True
-    else:
-        missing_tokens = [
-            token
-            for token in required_tokens
-            if token not in globals() or globals().get(token) is None
-        ]
-        logging.critical("Missing required tokens: %s", *missing_tokens)
-        return False
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
