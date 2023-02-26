@@ -34,13 +34,34 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 def check_tokens() -> None:
     """Проверяет, что токены получены.
 
     Райзит исключение при потере какого-либо токена.
     """
-    return all((PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID))
+    required_tokens = (
+        "PRACTICUM_TOKEN",
+        "TELEGRAM_TOKEN",
+        "TELEGRAM_CHAT_ID",
+    )
+    if all(
+        token in globals() and globals().get(token) is not None
+        for token in required_tokens
+    ):
+        logging.info("All required tokens are present.")
+        return True
+    else:
+        missing_tokens = [
+            token
+            for token in required_tokens
+            if token not in globals() or globals().get(token) is None
+        ]
+        logging.critical("Missing required tokens: %s", *missing_tokens)
+        return False
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
@@ -167,3 +188,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
