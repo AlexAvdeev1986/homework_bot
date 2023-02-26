@@ -131,18 +131,30 @@ def check_response(
     raise TypeError("Структура данных не соответствует ожиданиям")
 
 
-def parse_status(homework: Dict[str, Union[int, str]]) -> str:
+def parse_status(homework):
     """Проверяет статус домашней работы.
     При наличии возвращает сообщение для отправки в Telegram.
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
     """
-    homework_name = homework["homework_name"]
-    for key in HOMEWORK_VERDICTS:
-        if homework["status"] == key:
-            verdict = HOMEWORK_VERDICTS[key]
-            return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
-    raise KeyError("ошибка данных")
+    current_status = ('rejected', 'reviewing', 'approved', 'denied')
+    homework_name = homework.get('homework_name')
+    homework_status = homework.get('status')
+    if homework_name in (None, '') or homework_status not in current_status:
+        logger.error(
+            (f'Переменная homework_name - {homework_name}, '
+             f'переменная homework_status - {homework_status}, '
+             f'ошибка в переменной!!!'),
+            exc_info=True
+        )
+        return 'Неверный ответ сервера'
+    elif homework_status == 'rejected':
+        verdict = 'К сожалению, в работе нашлись ошибки.'
+    elif homework_status == 'reviewing':
+        verdict = 'Работа взята в ревью. Ждите вердикта!'
+    else:
+        verdict = 'Ревьюеру всё понравилось, работа зачтена!'
+    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def main() -> None:
