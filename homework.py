@@ -140,26 +140,19 @@ def parse_status(homework):
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
     """
-    current_status = ("rejected", "reviewing", "approved", "denied")
-    homework_name = homework.get("homework_name")
-    homework_status = homework.get("status")
-    if homework_name in (None, "") or homework_status not in current_status:
-        logger.error(
-            (
-                f"Переменная homework_name - {homework_name}, "
-                f"переменная homework_status - {homework_status}, "
-                f"ошибка в переменной!!!"
-            ),
-            exc_info=True,
+    try:
+        name, status = homework["homework_name"], homework["status"]
+    except KeyError:
+        logging.error("Один или оба ключа отсутствуют")
+        raise NoHomeworkDetectedError("Домашней работы нет")
+    try:
+        return (
+            f'Изменился статус проверки работы "{name}". '
+            f"{HOMEWORK_VERDICTS[status]}"
         )
-        return "Неверный ответ сервера"
-    elif homework_status == "rejected":
-        verdict = "К сожалению, в работе нашлись ошибки."
-    elif homework_status == "reviewing":
-        verdict = "Работа взята в ревью. Ждите вердикта!"
-    else:
-        verdict = "Ревьюеру всё понравилось, работа зачтена!"
-    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    except KeyError:
+        logging.error("Неожиданный статус домашней работы")
+        raise KeyError("Статуса %s нет в словаре", status)
 
 
 def main() -> None:
