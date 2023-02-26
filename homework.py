@@ -35,7 +35,7 @@ logging.basicConfig(
 )
 
 
-def check_tokens()-> None:
+def check_tokens() -> None:
     """Проверяет, что токены получены.
 
     Райзит исключение при потере какого-либо токена.
