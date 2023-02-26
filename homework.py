@@ -4,12 +4,13 @@ import sys
 import time
 from http import HTTPStatus
 from typing import Dict, List, Union
+from telegram.error import TelegramError
 
 import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import CantSendMessageError, NoHomeworkDetectedError
+from exceptions import NoHomeworkDetectedError
 
 load_dotenv()
 
@@ -64,19 +65,19 @@ def check_tokens() -> None:
         return False
 
 
-def send_message(bot: telegram.Bot, text: str) -> None:
+def send_message(bot, message) -> None:
     """Бот отправляет текст сообщения в телеграм.
     При неудачной попытке отправки сообщения логируется исключение
     TelegramError и выбрасывается исключение об невозможности
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
-        logger.info(f"Удачная отправка сообщения в Telegram: {text}")
-    except CantSendMessageError as error:
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+        logger.info(f"Удачная отправка сообщения в Telegram: {message}")
+    except TelegramError as error:
         logger.error(f"Cбой при отправке сообщения в Telegram: {error}")
-        raise CantSendMessageError(
-            f"Cбой при отправке сообщения в Telegram: {text}"
+        raise TelegramError(
+            f"Cбой при отправке сообщения в Telegram: {message}"
         )
 
 
