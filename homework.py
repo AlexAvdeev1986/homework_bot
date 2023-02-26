@@ -34,23 +34,6 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler("debug.log")
-file_handler.setLevel(logging.DEBUG)
-
-# create a logging format
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-file_handler.setFormatter(formatter)
-
-# add the file handler to the logger
-logger.addHandler(file_handler)
-
-# use the logger to log messages
-logger.debug("Debug message")
-
 
 def check_tokens() -> None:
     """Проверяет, что токены получены.
