@@ -27,6 +27,7 @@ HOMEWORK_VERDICTS = {
     "rejected": "Работа проверена: у ревьюера есть замечания.",
 }
 
+logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stdout,
@@ -34,8 +35,7 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
 
 
 def check_tokens() -> None:
@@ -71,16 +71,13 @@ def send_message(bot: telegram.Bot, text: str) -> None:
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(
-            TELEGRAM_CHAT_ID,
-            text=text,
-        )
-    except telegram.error.TelegramError:
-        logging.exception("Cбой при отправке сообщения в Telegram")
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
+        logger.info(f"Удачная отправка сообщения в Telegram: {text}")
+    except CantSendMessageError as error:
+        logger.error(f"Cбой при отправке сообщения в Telegram: {error}")
         raise CantSendMessageError(
-            "Невозможно отправить сообщение в Telegram"
+            f"Cбой при отправке сообщения в Telegram: {text}"
         )
-    logging.debug("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
@@ -188,4 +185,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    
