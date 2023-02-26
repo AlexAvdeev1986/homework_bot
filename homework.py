@@ -137,23 +137,25 @@ def parse_status(homework):
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
     """
-    current_status = ('rejected', 'reviewing', 'approved', 'denied')
-    homework_name = homework.get('homework_name')
-    homework_status = homework.get('status')
-    if homework_name in (None, '') or homework_status not in current_status:
+    current_status = ("rejected", "reviewing", "approved", "denied")
+    homework_name = homework.get("homework_name")
+    homework_status = homework.get("status")
+    if homework_name in (None, "") or homework_status not in current_status:
         logger.error(
-            (f'Переменная homework_name - {homework_name}, '
-             f'переменная homework_status - {homework_status}, '
-             f'ошибка в переменной!!!'),
-            exc_info=True
+            (
+                f"Переменная homework_name - {homework_name}, "
+                f"переменная homework_status - {homework_status}, "
+                f"ошибка в переменной!!!"
+            ),
+            exc_info=True,
         )
-        return 'Неверный ответ сервера'
-    elif homework_status == 'rejected':
-        verdict = 'К сожалению, в работе нашлись ошибки.'
-    elif homework_status == 'reviewing':
-        verdict = 'Работа взята в ревью. Ждите вердикта!'
+        return "Неверный ответ сервера"
+    elif homework_status == "rejected":
+        verdict = "К сожалению, в работе нашлись ошибки."
+    elif homework_status == "reviewing":
+        verdict = "Работа взята в ревью. Ждите вердикта!"
     else:
-        verdict = 'Ревьюеру всё понравилось, работа зачтена!'
+        verdict = "Ревьюеру всё понравилось, работа зачтена!"
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
