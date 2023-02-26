@@ -35,13 +35,12 @@ logging.basicConfig(
 )
 
 
-def check_tokens():
+def check_tokens()-> None:
     """Проверяет, что токены получены.
 
     Райзит исключение при потере какого-либо токена.
     """
-    token_all = [PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]
-    return all(token_all)
+    return all((PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID))
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
