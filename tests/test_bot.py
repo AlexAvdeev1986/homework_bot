@@ -77,54 +77,71 @@ class TestHomework:
     HOMEWORK_VERDICTS = {
         'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
         'reviewing': 'Работа взята на проверку ревьюером.',
-        'rejected': 'Работа проверена: у ревьюера есть замечания.'
+        'rejected': 'Работа проверена: у ревьюера есть замечания.',
     }
     ENV_VARS = ['PRACTICUM_TOKEN', 'TELEGRAM_TOKEN', 'TELEGRAM_CHAT_ID']
-    for v in ENV_VARS:
-        try:
-            os.environ.pop(v)
-        except KeyError:
-            pass
-    try:
-        import homework
-    except KeyError as e:
-        for arg in e.args:
-            if arg in ENV_VARS:
-                assert False, (
-                    'Убедитесь, что при запуске бота, проверяете наличие '
-                    'переменных окружения, и при их отсутствии происходит '
-                    'выход из программы `SystemExit`\n'
-                    f'{repr(e)}'
-                )
-            else:
-                raise
-    except SystemExit:
-        for v in ENV_VARS:
-            os.environ[v] = ''
-
-    def test_check_tokens_false(self):
-        for v in self.ENV_VARS:
-            try:
-                os.environ.pop(v)
-            except KeyError:
-                pass
-
-        import homework
-
-        for v in self.ENV_VARS:
-            utils.check_default_var_exists(homework, v)
-
-        homework.PRACTICUM_TOKEN = None
-        homework.TELEGRAM_TOKEN = None
-        homework.TELEGRAM_CHAT_ID = None
-
-        func_name = 'check_tokens'
-        utils.check_function(homework, func_name, 0)
-        tokens = homework.check_tokens()
-        assert not tokens, (
-            'Проверьте, что при отсутствии необходимых переменных окружения, '
-            f'функция {func_name} возвращает False'
-        )
+    HOMEWORK_CONSTANTS = (
+        'PRACTICUM_TOKEN',
+        'TELEGRAM_TOKEN',
+        'TELEGRAM_CHAT_ID',
+        'RETRY_PERIOD',
+        'ENDPOINT',
+        'HEADERS',
+        'HOMEWORK_VERDICTS',
+    )
+    HOMEWORK_FUNC_WITH_PARAMS_QTY = {
+        'send_message': 2,
+        'get_api_answer': 1,
+        'check_response': 1,
+        'parse_status': 1,
+        'check_tokens': 0,
+        'main': 0,
+    }
+    RETRY_PERIOD = 600
+    INVALID_RESPONSES = {
+        'no_homework_key': utils.InvalidResponse(
+            {"current_date": 123246}, 'homeworks'
+        ),
+        'not_dict_response': utils.InvalidResponse(
+            [
+                {
+                    'homeworks': [
+                        {'homework_name': 'hw123', 'status': 'approved'}
+                    ],
+                    "current_date": 123246,
+                }
+            ],
+            None,
+        ),
+        'homeworks_not_in_list': utils.InvalidResponse(
+            {
+                'homeworks': {'homework_name': 'hw123', 'status': 'approved'},
+                'current_date': 123246,
+            },
+            None,
+        ),
+    }
+    NOT_OK_RESPONSES = {
+        500: (
+            create_mock_response_get_with_custom_status_and_data(
+                random_timestamp=1000198000,
+                http_status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                data={},
+            )
+        ),
+        401: (
+            create_mock_response_get_with_custom_status_and_data(
+                random_timestamp=1000198991,
+                http_status=HTTPStatus.UNAUTHORIZED,
+                data={
+                    'code': 'not_authenticated',
+                    'message': 'Учетные данные не были предоставлены.',
+                    'source': '__response__',
+                },
+            )
+        ),
+    }
+    
 
     def test_check_tokens_true(self):
         for v in self.ENV_VARS:
