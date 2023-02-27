@@ -87,7 +87,7 @@ def parse_status(homework: Dict[str, str]):
     if homework_status is None:
         raise KeyError('Неправильный ключ')
     try:
-        verdict = HOMEWORK_STATUSES[homework_status]
+        verdict = HOMEWORK_VERDICTS[homework_status]
         return f'Изменился статус проверки работы "{homework_name}". {verdict}'
     except KeyError:
         raise KeyError(f'Статус домашней работы "{homework_status}" '
