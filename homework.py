@@ -34,8 +34,11 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
+handler = logging.StreamHandler(sys.stdout)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+handler.setFormatter(format)
+logger.addHandler(handler)
 
 
 def check_tokens() -> None:
@@ -53,16 +56,10 @@ def send_message(bot: telegram.Bot, text: str) -> None:
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(
-            TELEGRAM_CHAT_ID,
-            text=text,
-        )
-    except telegram.error.TelegramError:
-        logging.exception("Cбой при отправке сообщения в Telegram")
-        raise CantSendMessageError(
-            "Невозможно отправить сообщение в Telegram"
-        )
-    logging.debug("Сообщение о статусе домашки отправлено")
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
+        logger.info(f"Бот отправил сообщение: {text}")
+    except Exception as error:
+        logger.error(f"Ошибка отправки сообщения: {error}")
 
 
 def get_api_answer(
@@ -109,9 +106,7 @@ def check_response(
         and all(key for key in ("current_date", "homeworks"))
         and isinstance(response.get("homeworks"), list)
     ):
-        logging.info(
-            'Все ключи из "response" получены и соответствуют норме'
-        )
+        logging.info('Все ключи из "response" получены и соответствуют норме')
         return response["homeworks"]
     raise TypeError("Структура данных не соответствует ожиданиям")
 
