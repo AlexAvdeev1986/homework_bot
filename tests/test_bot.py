@@ -599,7 +599,7 @@ class TestHomework:
         caplog,
         monkeypatch,
         random_timestamp,
-        timestamp,
+        current_timestamp,
         random_message,
         homework_module,
     ):
@@ -607,7 +607,7 @@ class TestHomework:
             monkeypatch,
             random_message,
             random_timestamp,
-            timestamp,
+            current_timestamp,
             homework_module,
         )
         homework_module.PRACTICUM_TOKEN = None

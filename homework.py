@@ -13,8 +13,6 @@ from exceptions import CantSendMessageError, NoHomeworkDetectedError
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
-
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -29,13 +27,41 @@ HOMEWORK_VERDICTS = {
     "rejected": "Работа проверена: у ревьюера есть замечания.",
 }
 
+logging.basicConfig(
+    level=logging.INFO,
+    stream=sys.stdout,
+    format="%(asctime)s - %(levelname)s - "
+    "%(funcName)s - %(lineno)d - %(message)s",
+)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 def check_tokens() -> None:
     """Проверяет, что токены получены.
 
     Райзит исключение при потере какого-либо токена.
     """
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+    required_tokens = (
+        "PRACTICUM_TOKEN",
+        "TELEGRAM_TOKEN",
+        "TELEGRAM_CHAT_ID",
+    )
+    if all(
+        token in globals() and globals().get(token) is not None
+        for token in required_tokens
+    ):
+        logging.info("All required tokens are present.")
+        return True
+    else:
+        missing_tokens = [
+            token
+            for token in required_tokens
+            if token not in globals() or globals().get(token) is None
+        ]
+        logging.critical("Missing required tokens: %s", *missing_tokens)
+        return False
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
@@ -44,16 +70,7 @@ def send_message(bot: telegram.Bot, text: str) -> None:
     TelegramError и выбрасывается исключение об невозможности
     отправить сообщение в Telegram.
     """
-    try:
-        bot.send_message(
-            TELEGRAM_CHAT_ID,
-            text=text,
-        )
-    except telegram.error.TelegramError:
-        logging.exception("Cбой при отправке сообщения в Telegram")
-        raise CantSendMessageError("Невозможно отправить сообщение в Telegram")
-    logging.debug("Сообщение о статусе домашки отправлено")
-
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 def get_api_answer(
     timestamp: int,
@@ -99,7 +116,9 @@ def check_response(
         and all(key for key in ("current_date", "homeworks"))
         and isinstance(response.get("homeworks"), list)
     ):
-        logging.info('Все ключи из "response" получены и соответствуют норме')
+        logging.info(
+            'Все ключи из "response" получены и соответствуют норме'
+        )
         return response["homeworks"]
     raise TypeError("Структура данных не соответствует ожиданиям")
 
@@ -157,14 +176,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s,%(levelname)s,%(message)s,%(funcName)s,%(lineno)d",
-        handlers=[
-            logging.StreamHandler(sys.stdout),
-            logging.FileHandler(
-                filename=os.path.join("main.log"), mode="w", encoding="UTF-8"
-            ),
-        ],
-    )
     main()
