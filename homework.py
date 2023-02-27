@@ -43,25 +43,7 @@ def check_tokens() -> None:
 
     Райзит исключение при потере какого-либо токена.
     """
-    required_tokens = (
-        "PRACTICUM_TOKEN",
-        "TELEGRAM_TOKEN",
-        "TELEGRAM_CHAT_ID",
-    )
-    if all(
-        token in globals() and globals().get(token) is not None
-        for token in required_tokens
-    ):
-        logging.info("All required tokens are present.")
-        return True
-    else:
-        missing_tokens = [
-            token
-            for token in required_tokens
-            if token not in globals() or globals().get(token) is None
-        ]
-        logging.critical("Missing required tokens: %s", *missing_tokens)
-        return False
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
@@ -70,7 +52,18 @@ def send_message(bot: telegram.Bot, text: str) -> None:
     TelegramError и выбрасывается исключение об невозможности
     отправить сообщение в Telegram.
     """
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+    try:
+        bot.send_message(
+            TELEGRAM_CHAT_ID,
+            text=text,
+        )
+    except telegram.error.TelegramError:
+        logging.exception("Cбой при отправке сообщения в Telegram")
+        raise CantSendMessageError(
+            "Невозможно отправить сообщение в Telegram"
+        )
+    logging.debug("Сообщение о статусе домашки отправлено")
+
 
 def get_api_answer(
     timestamp: int,
