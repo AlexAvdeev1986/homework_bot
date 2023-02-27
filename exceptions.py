@@ -1,6 +1,10 @@
-class NoHomeworkDetectedError(Exception):
+class WrongStatusCodeException(Exception):
     pass
 
 
-class CantSendMessageError(Exception):
+class TelegramException(Exception):
+    pass
+
+
+class EndpointIsNotAvailable(Exception):
     pass
