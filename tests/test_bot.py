@@ -65,7 +65,7 @@ class TestHomework:
     RETRY_PERIOD = 600
     INVALID_RESPONSES = {
         'no_homework_key': utils.InvalidResponse(
-            {"current_date": 123246}, 'homeworks'
+            {"date": 123246}, 'homeworks'
         ),
         'not_dict_response': utils.InvalidResponse(
             [
@@ -73,7 +73,7 @@ class TestHomework:
                     'homeworks': [
                         {'homework_name': 'hw123', 'status': 'approved'}
                     ],
-                    "current_date": 123246,
+                    "date": 123246,
                 }
             ],
             None,
@@ -81,7 +81,7 @@ class TestHomework:
         'homeworks_not_in_list': utils.InvalidResponse(
             {
                 'homeworks': {'homework_name': 'hw123', 'status': 'approved'},
-                'current_date': 123246,
+                'date': 123246,
             },
             None,
         ),
@@ -147,7 +147,7 @@ class TestHomework:
         )
 
     def test_request_get_call(
-        self, monkeypatch, current_timestamp, homework_module
+        self, monkeypatch, timestamp, homework_module
     ):
         func_name = 'get_api_answer'
         utils.check_function(
@@ -157,7 +157,7 @@ class TestHomework:
         )
 
         def check_request_get_call(
-            url, current_timestamp=current_timestamp, **kwargs
+            url, timestamp=timestamp, **kwargs
         ):
             expected_url = (
                 'https://practicum.yandex.ru/api/user_api/homework_statuses'
@@ -185,7 +185,7 @@ class TestHomework:
             try:
                 from_date = int(kwargs['params']['from_date'])
                 assert from_date == int(
-                    current_timestamp
+                    timestamp
                 ), 'Проверьте, что в параметре `from_date` передан timestamp.'
             except ValueError:
                 raise AssertionError(
@@ -194,14 +194,14 @@ class TestHomework:
 
         monkeypatch.setattr(requests, 'get', check_request_get_call)
         try:
-            homework_module.get_api_answer(current_timestamp)
+            homework_module.get_api_answer(timestamp)
         except AssertionError as e:
             raise ArithmeticError(str(e))
         except Exception:
             pass
 
     def test_get_api_answers(
-        self, monkeypatch, random_timestamp, current_timestamp, homework_module
+        self, monkeypatch, random_timestamp, timestamp, homework_module
     ):
         func_name = 'get_api_answer'
         utils.check_function(
@@ -214,20 +214,20 @@ class TestHomework:
             return utils.MockResponseGET(
                 *args,
                 random_timestamp=random_timestamp,
-                current_timestamp=current_timestamp,
+                timestamp=timestamp,
                 **kwargs,
             )
 
         monkeypatch.setattr(requests, 'get', mock_response_get)
 
-        result = homework_module.get_api_answer(current_timestamp)
+        result = homework_module.get_api_answer(timestamp)
         assert isinstance(
             result, dict
         ), f'Проверьте, что функция `{func_name}` возвращает словарь.'
 
     @pytest.mark.parametrize('response', NOT_OK_RESPONSES.values())
     def test_get_not_200_status_response(
-        self, monkeypatch, current_timestamp, response, homework_module
+        self, monkeypatch, timestamp, response, homework_module
     ):
         func_name = 'get_api_answer'
         utils.check_function(
@@ -238,7 +238,7 @@ class TestHomework:
 
         monkeypatch.setattr(requests, 'get', response)
         try:
-            homework_module.get_api_answer(current_timestamp)
+            homework_module.get_api_answer(timestamp)
         except Exception:
             pass
         else:
@@ -248,7 +248,7 @@ class TestHomework:
             )
 
     def test_get_api_answer_with_request_exception(
-        self, current_timestamp, monkeypatch, homework_module
+        self, timestamp, monkeypatch, homework_module
     ):
         func_name = 'get_api_answer'
         utils.check_function(
@@ -262,7 +262,7 @@ class TestHomework:
 
         monkeypatch.setattr(requests, 'get', mock_request_get_with_exception)
         try:
-            homework_module.get_api_answer(current_timestamp)
+            homework_module.get_api_answer(timestamp)
         except requests.RequestException:
             raise AssertionError(
                 f'Убедитесь, что в функции `{func_name}` обрабатывается '
@@ -376,7 +376,7 @@ class TestHomework:
 
         valid_response = {
             'homeworks': [{'homework_name': 'hw123', 'status': 'approved'}],
-            'current_date': random_timestamp,
+            'date': random_timestamp,
         }
         try:
             homework_module.check_response(valid_response)
@@ -537,7 +537,7 @@ class TestHomework:
         monkeypatch,
         random_message,
         random_timestamp,
-        current_timestamp,
+        timestamp,
         homework_module,
     ):
         """
@@ -588,7 +588,7 @@ class TestHomework:
             return utils.MockResponseGET(
                 *args,
                 random_timestamp=random_timestamp,
-                current_timestamp=current_timestamp,
+                timestamp=timestamp,
                 **kwargs,
             )
 
@@ -599,7 +599,7 @@ class TestHomework:
         caplog,
         monkeypatch,
         random_timestamp,
-        current_timestamp,
+        timestamp,
         random_message,
         homework_module,
     ):
@@ -607,7 +607,7 @@ class TestHomework:
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module,
         )
         homework_module.PRACTICUM_TOKEN = None
@@ -637,7 +637,7 @@ class TestHomework:
         self,
         monkeypatch,
         random_timestamp,
-        current_timestamp,
+        timestamp,
         random_message,
         caplog,
         homework_module,
@@ -646,7 +646,7 @@ class TestHomework:
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module,
         )
         homework_module.PRACTICUM_TOKEN = 'sometoken'
@@ -670,7 +670,7 @@ class TestHomework:
         self,
         monkeypatch,
         random_timestamp,
-        current_timestamp,
+        timestamp,
         random_message,
         caplog,
         homework_module,
@@ -679,7 +679,7 @@ class TestHomework:
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module,
         )
         homework_module.PRACTICUM_TOKEN = 'sometoken'
@@ -687,7 +687,7 @@ class TestHomework:
         homework_module.TELEGRAM_CHAT_ID = '12345'
 
         func_name = 'check_response'
-        expecred_data = {"homeworks": [], "current_date": random_timestamp}
+        expecred_data = {"homeworks": [], "date": random_timestamp}
         log_msg = 'Call check_response'
         no_response_assert_msg = (
             f'Убедитесь, что в функцию `{func_name}` передан ответ API '
@@ -719,7 +719,7 @@ class TestHomework:
         self,
         monkeypatch,
         random_timestamp,
-        current_timestamp,
+        timestamp,
         random_message,
         caplog,
         homework_module,
@@ -728,12 +728,12 @@ class TestHomework:
             monkeypatch,
             random_message,
             random_timestamp,
-            current_timestamp,
+            timestamp,
             homework_module,
         )
         data_with_new_hw_status = {
             'homeworks': [{'homework_name': 'hw123', 'status': 'approved'}],
-            'current_date': random_timestamp,
+            'date': random_timestamp,
         }
         mock_response_get_with_new_status = (
             create_mock_response_get_with_custom_status_and_data(
