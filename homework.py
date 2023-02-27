@@ -36,6 +36,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 def check_tokens() -> None:
     """Проверяет, что токены получены.
 
@@ -75,9 +76,7 @@ def send_message(bot: telegram.Bot, text: str) -> None:
         )
     except telegram.error.TelegramError:
         logging.exception("Cбой при отправке сообщения в Telegram")
-        raise CantSendMessageError(
-            "Невозможно отправить сообщение в Telegram"
-        )
+        raise CantSendMessageError("Невозможно отправить сообщение в Telegram")
     logging.debug("Сообщение о статусе домашки отправлено")
 
 
@@ -125,9 +124,7 @@ def check_response(
         and all(key for key in ("current_date", "homeworks"))
         and isinstance(response.get("homeworks"), list)
     ):
-        logging.info(
-            'Все ключи из "response" получены и соответствуют норме'
-        )
+        logging.info('Все ключи из "response" получены и соответствуют норме')
         return response["homeworks"]
     raise TypeError("Структура данных не соответствует ожиданиям")
 
@@ -188,9 +185,9 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler(stream=sys.stdout)
     logger.addHandler(handler)
-    formatter = logging.Formatter(
-        '%(asctime)s [%(levelname)s] -function %(funcName)s- '
-        '-line %(lineno)d- %(message)s'
+    format = logging.format(
+        "%(asctime)s [%(levelname)s] -function %(funcName)s- "
+        "-line %(lineno)d- %(message)s"
     )
-    handler.setFormatter(formatter)
+    handler.setFormatter(format)
     main()
