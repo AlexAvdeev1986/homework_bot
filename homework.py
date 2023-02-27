@@ -4,13 +4,12 @@ import sys
 import time
 from http import HTTPStatus
 from typing import Dict, List, Union
-from telegram.error import TelegramError
 
 import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import NoHomeworkDetectedError
+from exceptions import CantSendMessageError, NoHomeworkDetectedError
 
 load_dotenv()
 
@@ -28,7 +27,6 @@ HOMEWORK_VERDICTS = {
     "rejected": "Работа проверена: у ревьюера есть замечания.",
 }
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stdout,
@@ -36,8 +34,7 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
-logger.addHandler(logging.StreamHandler())
-
+logger = logging.getLogger(__name__)
 
 def check_tokens() -> None:
     """Проверяет, что токены получены.
@@ -65,20 +62,23 @@ def check_tokens() -> None:
         return False
 
 
-def send_message(bot, message) -> None:
+def send_message(bot: telegram.Bot, text: str) -> None:
     """Бот отправляет текст сообщения в телеграм.
     При неудачной попытке отправки сообщения логируется исключение
     TelegramError и выбрасывается исключение об невозможности
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-        logger.info(f"Удачная отправка сообщения в Telegram: {message}")
-    except TelegramError as error:
-        logger.error(f"Cбой при отправке сообщения в Telegram: {error}")
-        raise TelegramError(
-            f"Cбой при отправке сообщения в Telegram: {message}"
+        bot.send_message(
+            TELEGRAM_CHAT_ID,
+            text=text,
         )
+    except telegram.error.TelegramError:
+        logging.exception("Cбой при отправке сообщения в Telegram")
+        raise CantSendMessageError(
+            "Невозможно отправить сообщение в Telegram"
+        )
+    logging.debug("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
@@ -185,4 +185,13 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    logger.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler(stream=sys.stdout)
+    logger.addHandler(handler)
+    formatter = logging.Formatter(
+        '%(asctime)s [%(levelname)s] -function %(funcName)s- '
+        '-line %(lineno)d- %(message)s'
+    )
+    handler.setFormatter(formatter)
+    main()
     main()
