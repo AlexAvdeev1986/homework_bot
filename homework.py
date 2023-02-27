@@ -70,13 +70,10 @@ def send_message(bot: telegram.Bot, message: str) -> None:
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(
-            chat_id=TELEGRAM_CHAT_ID,
-            text=message
-        )
-        logger.info(f'Сообщение {message} отправлено.')
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+        logger.info(f"Сообщение {message} отправлено.")
     except Exception:
-        error = 'Сообщение не было отправлено.'
+        error = "Сообщение не было отправлено."
         raise telegram.error.TelegramError(error)
 
 
