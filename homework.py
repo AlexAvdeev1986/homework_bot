@@ -54,21 +54,18 @@ def check_tokens() -> None:
         sys.exit()
 
 
-def send_message(bot: telegram.Bot, text: str) -> None:
+def send_message(bot, message) -> None:
     """Бот отправляет текст сообщения в телеграм.
     При неудачной попытке отправки сообщения логируется исключение
     TelegramError и выбрасывается исключение об невозможности
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(
-            TELEGRAM_CHAT_ID,
-            text=text,
-        )
-    except telegram.error.TelegramError:
-        logging.exception("Cбой при отправке сообщения в Telegram")
-        raise CantSendMessageError("Невозможно отправить сообщение в Telegram")
-    logging.debug("Сообщение о статусе домашки отправлено")
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+        logging.debug(f"Сообщение отправлено {message}")
+    except CantSendMessageError as error:
+        logging.error(f"Сообщение не отправлено: {message}")
+        raise CantSendMessageError(f"Ошибка {error}") from error
 
 
 def get_api_answer(
