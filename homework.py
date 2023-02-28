@@ -43,25 +43,15 @@ def check_tokens() -> None:
 
     Райзит исключение при потере какого-либо токена.
     """
-    required_tokens = (
-        "PRACTICUM_TOKEN",
-        "TELEGRAM_TOKEN",
-        "TELEGRAM_CHAT_ID",
-    )
-    if all(
-        token in globals() and globals().get(token) is not None
-        for token in required_tokens
-    ):
-        logging.info("All required tokens are present.")
-        return True
-    else:
-        missing_tokens = [
-            token
-            for token in required_tokens
-            if token not in globals() or globals().get(token) is None
-        ]
-        logging.critical("Missing required tokens: %s", *missing_tokens)
-        return False
+    if PRACTICUM_TOKEN is None:
+        logging.critical("Нет practicum token")
+        sys.exit()
+    if TELEGRAM_TOKEN is None:
+        logging.critical("Нет telegram token")
+        sys.exit()
+    if TELEGRAM_CHAT_ID is None:
+        logging.critical("Нет telegram chat id")
+        sys.exit()
 
 
 def send_message(bot: telegram.Bot, text: str) -> None:
@@ -77,9 +67,7 @@ def send_message(bot: telegram.Bot, text: str) -> None:
         )
     except telegram.error.TelegramError:
         logging.exception("Cбой при отправке сообщения в Telegram")
-        raise CantSendMessageError(
-            "Невозможно отправить сообщение в Telegram"
-        )
+        raise CantSendMessageError("Невозможно отправить сообщение в Telegram")
     logging.debug("Сообщение о статусе домашки отправлено")
 
 
@@ -127,9 +115,7 @@ def check_response(
         and all(key for key in ("current_date", "homeworks"))
         and isinstance(response.get("homeworks"), list)
     ):
-        logging.info(
-            'Все ключи из "response" получены и соответствуют норме'
-        )
+        logging.info('Все ключи из "response" получены и соответствуют норме')
         return response["homeworks"]
     raise TypeError("Структура данных не соответствует ожиданиям")
 
