@@ -133,7 +133,6 @@ def main():
                 send_message(bot, message)
                 error_message = error
         finally:
-            logging.error(f"Не удалось получить значение из константы {error}")
             logging.info("Спящий режим")
             time.sleep(RETRY_PERIOD)
 
