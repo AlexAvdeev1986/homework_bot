@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import time
 from http import HTTPStatus
 
@@ -36,7 +37,15 @@ HOMEWORK_VERDICTS = {
 
 def check_tokens():
     """Проверка доступности переменных."""
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+    if PRACTICUM_TOKEN is None:
+        logging.critical("Нет practicum token")
+        sys.exit()
+    if TELEGRAM_TOKEN is None:
+        logging.critical("Нет telegram token")
+        sys.exit()
+    if TELEGRAM_CHAT_ID is None:
+        logging.critical("Нет telegram chat id")
+        sys.exit()
 
 
 def send_message(bot, message):
@@ -45,6 +54,7 @@ def send_message(bot, message):
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logging.debug(f"Сообщение отправлено {message}")
     except Exception as error:
+        logging.error(f"Сообщение не отправлено: {message}")
         raise Exception(f"Ошибка {error}") from error
 
 
