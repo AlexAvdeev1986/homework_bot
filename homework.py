@@ -9,7 +9,14 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import NoHomeworkDetectedError
+from exceptions import (
+    NoHomeworkDetectedError,
+    EmptyListException,
+    InvalidApiExc,
+    InvalidResponseExc,
+    InvalidTokenException,
+    InvalidJsonExc,
+)
 
 load_dotenv()
 
@@ -27,15 +34,13 @@ HOMEWORK_VERDICTS = {
     "rejected": "Работа проверена: у ревьюера есть замечания.",
 }
 
-logging.basicConfig(
-    level=logging.INFO,
-    stream=sys.stdout,
-    format="%(asctime)s - %(levelname)s - "
-    "%(funcName)s - %(lineno)d - %(message)s",
-)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] - %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def check_tokens() -> None:
@@ -104,22 +109,20 @@ def get_api_answer(
     return response.json()
 
 
-def check_response(
-    response: Dict[str, Union[List[Dict[str, Union[int, str]]], int]]
-) -> List[Dict[str, Union[int, str]]]:
-    """Проверяет, соответствует ли тип входных данных ожидаемому.
-    Проверяет наличие всех ожидаемых ключей в ответе.
-    Райзит TypeError при несоответствии типа данных,
-    KeyError - при отсутствии ожидаемого ключа.
-    """
-    if (
-        isinstance(response, dict)
-        and all(key for key in ("current_date", "homeworks"))
-        and isinstance(response.get("homeworks"), list)
-    ):
-        logging.info('Все ключи из "response" получены и соответствуют норме')
-        return response["homeworks"]
-    raise TypeError("Структура данных не соответствует ожиданиям")
+def check_response(response):
+    """Проверка ответа API и возврат списка работ."""
+    if not isinstance(response, dict):
+        raise TypeError("not dict после .json() в ответе API")
+    if "homeworks" and "current_date" not in response:
+        raise InvalidApiExc("Некорректный ответ API")
+    if not isinstance(response.get("homeworks"), list):
+        raise TypeError("not list в ответе API по ключу homeworks")
+    if not response.get("homeworks"):
+        raise EmptyListException("Новых статусов нет")
+    try:
+        return response.get("homeworks")[0]
+    except Exception as error:
+        raise InvalidResponseExc(f"Из ответа не получен список работ: {error}")
 
 
 def parse_status(homework):
