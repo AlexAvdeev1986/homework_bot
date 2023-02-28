@@ -23,7 +23,7 @@ logging.basicConfig(
     encoding="UTF-8",
 )
 
-RETRY_PERIOD: int = 60*10
+RETRY_PERIOD: int = 60 * 10
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 
