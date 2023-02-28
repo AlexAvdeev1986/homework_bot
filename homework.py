@@ -50,12 +50,7 @@ def check_tokens():
 
 def send_message(bot, message):
     """Отправляет сообщение в Телеграм чат."""
-    try:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-        logging.debug(f"Сообщение отправлено {message}")
-    except Exception as error:
-        logging.error(f"Сообщение не отправлено: {message}")
-        raise Exception(f"Ошибка {error}") from error
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def get_api_answer(timestamp):
