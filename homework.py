@@ -117,7 +117,7 @@ def main():
     check_tokens()
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
-    error_message = ''
+    error_message = ""
     while True:
         try:
             response = get_api_answer(timestamp=timestamp)
@@ -125,18 +125,17 @@ def main():
             if homeworks:
                 send_message(
                     bot,
-                    parse_status(response.get('homeworks')[0]),
+                    parse_status(response.get("homeworks")[0]),
                 )
-            timestamp = response['current_date']
+            timestamp = response["current_date"]
         except Exception as error:
             if error != error_message:
-                message = f'Сбой в работе программы: {error}'
+                message = f"Сбой в работе программы: {error}"
                 send_message(bot, message)
                 error_message = error
         finally:
-            logging.info('Спящий режим')
+            logging.info("Спящий режим")
             time.sleep(RETRY_PERIOD)
-
 
 
 if __name__ == "__main__":
