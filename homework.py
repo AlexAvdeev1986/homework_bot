@@ -34,7 +34,7 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def check_tokens() :
+def check_tokens():
     """Проверка доступности переменных."""
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
