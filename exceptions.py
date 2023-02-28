@@ -1,28 +1,38 @@
-class NotForSending(Exception):
-    """Не для пересылки в телеграм."""
+class EmptyDictionaryError(Exception):
+    """Пустой словарь или список."""
     pass
 
 
-class ProblemDescriptions(Exception):
-    """Описания проблемы."""
+class RequestExceptionError(Exception):
+    """Ошибка запроса."""
     pass
 
 
-class InvalidResponseCode(Exception):
-    """Не верный код ответа."""
+class TheAnswerIsNot200Error(Exception):
+    """Сервер ответил кодом отличным от 200."""
     pass
 
 
-class ConnectinError(Exception):
-    """Не верный код ответа."""
+class UnknownHomeWorkStatusError(Exception):
+    """Неизвестный статус домашней работы ."""
     pass
 
 
-class EmptyResponseFromAPI(NotForSending):
-    """Пустой ответ от API."""
+class UnknownDictKeyError(Exception):
+    """Неизвестный ключ домашней работы ."""
     pass
 
 
-class TelegramError(NotForSending):
-    """Ошибка телеграма."""
+class RequestIsNotDictionaryError(Exception):
+    """Ошибка отправления сообщения в телеграм."""
+    pass
+
+
+class MandatoryTokenError(Exception):
+    """Обязательные переменные окружения не были введены."""
+    pass
+
+
+class TelegramSendMessageError(Exception):
+    """Обязательные переменные окружения не были введены."""
     pass
