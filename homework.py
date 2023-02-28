@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 import time
 from http import HTTPStatus
 
@@ -38,9 +37,8 @@ HOMEWORK_VERDICTS = {
 def check_tokens():
     """Проверка доступности переменных."""
     if not all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
-        logger.critical("Отсутствует обязательная переменная окружения.")
+        logger.critical('Отсутствует обязательная переменная окружения.')
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
-
 
 def send_message(bot, message):
     """Отправляет сообщение в Телеграм чат."""
