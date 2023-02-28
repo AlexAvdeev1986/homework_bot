@@ -9,12 +9,7 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import (
-    NoHomeworkDetectedError,
-    EmptyListException,
-    InvalidApiExc,
-    InvalidResponseExc,
-)
+from exceptions import CantSendMessageError, NoHomeworkDetectedError
 
 load_dotenv()
 
@@ -32,27 +27,60 @@ HOMEWORK_VERDICTS = {
     "rejected": "Работа проверена: у ревьюера есть замечания.",
 }
 
+logging.basicConfig(
+    level=logging.INFO,
+    stream=sys.stdout,
+    format="%(asctime)s - %(levelname)s - "
+    "%(funcName)s - %(lineno)d - %(message)s",
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter("%(asctime)s [%(levelname)s] - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 
-def check_tokens():
-    """Проверка наличия всех токенов в переменных окружения."""
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+def check_tokens() -> None:
+    """Проверяет, что токены получены.
+
+    Райзит исключение при потере какого-либо токена.
+    """
+    required_tokens = (
+        "PRACTICUM_TOKEN",
+        "TELEGRAM_TOKEN",
+        "TELEGRAM_CHAT_ID",
+    )
+    if all(
+        token in globals() and globals().get(token) is not None
+        for token in required_tokens
+    ):
+        logging.info("All required tokens are present.")
+        return True
+    else:
+        missing_tokens = [
+            token
+            for token in required_tokens
+            if token not in globals() or globals().get(token) is None
+        ]
+        logging.critical("Missing required tokens: %s", *missing_tokens)
+        return False
 
 
-def send_message(bot, message):
-    """Отправка сообщения."""
+def send_message(bot: telegram.Bot, text: str) -> None:
+    """Бот отправляет текст сообщения в телеграм.
+    При неудачной попытке отправки сообщения логируется исключение
+    TelegramError и выбрасывается исключение об невозможности
+    отправить сообщение в Telegram.
+    """
     try:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-        logger.info(f"Бот отправил сообщение: {message}")
-    except Exception as error:
-        logger.error(f"Ошибка отправки сообщения: {error}")
+        bot.send_message(
+            TELEGRAM_CHAT_ID,
+            text=text,
+        )
+    except telegram.error.TelegramError:
+        logging.exception("Cбой при отправке сообщения в Telegram")
+        raise CantSendMessageError(
+            "Невозможно отправить сообщение в Telegram"
+        )
+    logging.debug("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
@@ -86,20 +114,24 @@ def get_api_answer(
     return response.json()
 
 
-def check_response(response):
-    """Проверка ответа API и возврат списка работ."""
-    if not isinstance(response, dict):
-        raise TypeError("not dict после .json() в ответе API")
-    if "homeworks" and "current_date" not in response:
-        raise InvalidApiExc("Некорректный ответ API")
-    if not isinstance(response.get("homeworks"), list):
-        raise TypeError("not list в ответе API по ключу homeworks")
-    if not response.get("homeworks"):
-        raise EmptyListException("Новых статусов нет")
-    try:
-        return response.get("homeworks")[0]
-    except Exception as error:
-        raise InvalidResponseExc(f"Из ответа не получен список работ: {error}")
+def check_response(
+    response: Dict[str, Union[List[Dict[str, Union[int, str]]], int]]
+) -> List[Dict[str, Union[int, str]]]:
+    """Проверяет, соответствует ли тип входных данных ожидаемому.
+    Проверяет наличие всех ожидаемых ключей в ответе.
+    Райзит TypeError при несоответствии типа данных,
+    KeyError - при отсутствии ожидаемого ключа.
+    """
+    if (
+        isinstance(response, dict)
+        and all(key for key in ("current_date", "homeworks"))
+        and isinstance(response.get("homeworks"), list)
+    ):
+        logging.info(
+            'Все ключи из "response" получены и соответствуют норме'
+        )
+        return response["homeworks"]
+    raise TypeError("Структура данных не соответствует ожиданиям")
 
 
 def parse_status(homework):
