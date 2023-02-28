@@ -9,7 +9,7 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import NoHomeworkDetectedError
+from exceptions import CantSendMessageError, NoHomeworkDetectedError
 
 load_dotenv()
 
@@ -17,7 +17,7 @@ PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-RETRY_PERIOD = 60 * 10  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
+RETRY_PERIOD = 600  # перевод 10 минут в секунды. 10 * 60 = 600 секунд
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 
@@ -34,38 +34,30 @@ logging.basicConfig(
     "%(funcName)s - %(lineno)d - %(message)s",
 )
 
-handler = logging.StreamHandler(sys.stdout)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler.setFormatter(format)
-logger.addHandler(handler)
-
-
-def check_tokens() -> None:
-    """Проверяет, что токены получены.
-
-    Райзит исключение при потере какого-либо токена.
-    """
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
-
 
 def send_message(bot: telegram.Bot, text: str) -> None:
     """Бот отправляет текст сообщения в телеграм.
+
     При неудачной попытке отправки сообщения логируется исключение
     TelegramError и выбрасывается исключение об невозможности
     отправить сообщение в Telegram.
     """
     try:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
-        logger.info(f"Бот отправил сообщение: {text}")
-    except Exception as error:
-        logger.error(f"Ошибка отправки сообщения: {error}")
+        bot.send_message(
+            TELEGRAM_CHAT_ID,
+            text=text,
+        )
+    except telegram.error.TelegramError:
+        logging.exception("Cбой при отправке сообщения в Telegram")
+        raise CantSendMessageError("Невозможно отправить сообщение в Telegram")
+    logging.debug("Сообщение о статусе домашки отправлено")
 
 
 def get_api_answer(
     timestamp: int,
 ) -> Dict[str, Union[List[Dict[str, Union[int, str]]], int]]:
     """Получает ответ от API.
+
     Райзит исключение при недоступности эндпоинта
     или других сбоях при запросе к нему.
     """
@@ -97,6 +89,7 @@ def check_response(
     response: Dict[str, Union[List[Dict[str, Union[int, str]]], int]]
 ) -> List[Dict[str, Union[int, str]]]:
     """Проверяет, соответствует ли тип входных данных ожидаемому.
+
     Проверяет наличие всех ожидаемых ключей в ответе.
     Райзит TypeError при несоответствии типа данных,
     KeyError - при отсутствии ожидаемого ключа.
@@ -111,8 +104,9 @@ def check_response(
     raise TypeError("Структура данных не соответствует ожиданиям")
 
 
-def parse_status(homework):
+def parse_status(homework: Dict[str, Union[int, str]]) -> str:
     """Проверяет статус домашней работы.
+
     При наличии возвращает сообщение для отправки в Telegram.
     При отсутствии статуса или получении недокументированного статуса
     райзит исключение.
@@ -132,32 +126,32 @@ def parse_status(homework):
         raise KeyError("Статуса %s нет в словаре", status)
 
 
+def check_tokens():
+    """Проверка доступности переменных окружения."""
+    return all([TELEGRAM_TOKEN, PRACTICUM_TOKEN, TELEGRAM_CHAT_ID])
+
+
 def main() -> None:
     """Основная логика работы бота."""
     check_tokens()
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
     error_message = ""
-    last_message = ""
     while True:
         try:
             response = get_api_answer(timestamp=timestamp)
             homeworks = check_response(response)
             if homeworks:
-                message = parse_status(response.get("homeworks")[0])
-
-                if message != last_message:
-                    send_message(bot, message)
-                    last_message = message
-
+                send_message(
+                    bot,
+                    parse_status(response.get("homeworks")[0]),
+                )
             timestamp = response["current_date"]
-
         except Exception as error:
             if error != error_message:
                 message = f"Сбой в работе программы: {error}"
                 send_message(bot, message)
                 error_message = error
-
         finally:
             logging.info("Спящий режим")
             time.sleep(RETRY_PERIOD)
