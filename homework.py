@@ -8,8 +8,8 @@ import telegram
 from dotenv import load_dotenv
 from requests import exceptions
 
-load_dotenv()
 
+load_dotenv()
 
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -21,6 +21,7 @@ logging.basicConfig(
     format="%(asctime)s, %(levelname)s, %(message)s",
     encoding="UTF-8",
 )
+
 
 RETRY_PERIOD: int = 60 * 10
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
@@ -37,8 +38,8 @@ HOMEWORK_VERDICTS = {
 def check_tokens():
     """Проверка доступности переменных."""
     if not all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
-        logger.critical('Отсутствует обязательная переменная окружения.')
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+        return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+
 
 def send_message(bot, message):
     """Отправляет сообщение в Телеграм чат."""
