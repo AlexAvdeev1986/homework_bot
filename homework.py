@@ -54,7 +54,7 @@ def send_message(bot, message):
     logger.info(f'Попытка отправить сообщение \"{message}\" в чат бота')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
-    except telegram.error.TelegramError as error:
+    except telegram.error.TelegramError:
         return False
     else:
         logger.debug(
