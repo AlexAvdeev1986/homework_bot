@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import time
 from http import HTTPStatus
 
@@ -21,7 +22,6 @@ logging.basicConfig(
     format="%(asctime)s, %(levelname)s, %(message)s",
     encoding="UTF-8",
 )
-
 
 RETRY_PERIOD: int = 60 * 10
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
@@ -131,4 +131,22 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        handlers=[
+            logging.handlers.RotatingFileHandler(
+                filename=__file__[:-2] + 'log',
+                maxBytes=500000,
+                backupCount=3,
+                encoding='utf-8'
+            ),
+            logging.StreamHandler(sys.stdout)
+        ],
+        format=(
+            '%(asctime)s, '
+            '[%(levelname)s], '
+            '%(message)s, '
+            '%(filename)s'
+        )
+    )
     main()
