@@ -51,16 +51,17 @@ def check_tokens():
 
 def send_message(bot, message):
     """Send status update."""
-    logger.info(f'Попытка отправить сообщение \"{message}\" в чат бота')
+    logging.info(f'Сообщение отправлено в чат '
+                     f'{TELEGRAM_CHAT_ID}: {message}')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
-    except telegram.error.TelegramError:
-        return False
+    except Exception:
+        raise TelegramError(f'Ошибка отправки сообщения в чат '
+                               f'{TELEGRAM_CHAT_ID}')
     else:
         logger.debug(
             f'Message \"{message}\" was sent from bot to chat '
             f'{TELEGRAM_CHAT_ID}')
-        return True
 
 
 def get_api_answer(timestamp):
@@ -167,6 +168,7 @@ def main():
                 send_message(bot, current_report['message_output'])
                 prev_report = current_report.copy()
         finally:
+            logging.info("Спящий режим")
             time.sleep(RETRY_PERIOD)
 
 
