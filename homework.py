@@ -44,17 +44,9 @@ file_handler.setFormatter(formatter)
 
 def check_tokens():
     """Environment variables validation."""
-    env_vars = (
-        ('PRACTICUM_TOKEN', PRACTICUM_TOKEN),
-        ('TELEGRAM_TOKEN', TELEGRAM_TOKEN),
-        ('TELEGRAM_CHAT_ID', TELEGRAM_CHAT_ID),
-    )
-    temp_bool = True
-    for name, value in env_vars:
-        if not value:
-            logger.critical(f'Пожалуйста, укажите переменную {name} в .env')
-            temp_bool = False
-    return temp_bool
+    if not all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
+        logger.critical('Отсутствует обязательная переменная окружения.')
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def send_message(bot, message):
