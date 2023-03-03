@@ -142,7 +142,6 @@ def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
         logger.critical("Пожалуйста, проверьте переменные окружения")
-        raise InvalidTokens("Please check variables are configured in .env")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     message = "Привет, мир!"
     timestamp = 0
