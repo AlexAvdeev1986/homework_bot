@@ -167,10 +167,8 @@ def main():
                     timestamp = response.get("current_date", timestamp)
             else:
                 logger.debug("Обновлений нет")
-        except InvalidTokens as e:
-            logger.error(str(e))
-        except ResponseFormatFailure as error:
-            logger.error(error)
+        except InvalidTokens as error:
+            logger.error(str(error))
         except Exception as error:
             message = f"Сбой в работе программы: {error}"
             current_report["message_output"] = message
