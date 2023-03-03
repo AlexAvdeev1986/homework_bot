@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from logging.handlers import RotatingFileHandler
+from send_message import send_message
 
 import requests
 import telegram
@@ -14,6 +15,7 @@ from exceptions import (
     InvalidTokens,
     ResponseFormatFailure,
     WrongStatusInResponse,
+    CustomException,
 )
 
 
@@ -41,6 +43,7 @@ file_handler = RotatingFileHandler(
 )
 logger.addHandler(handler)
 logger.addHandler(file_handler)
+logging.basicConfig(filename="example.log", level=logging.DEBUG)
 formatter = logging.Formatter(
     "%(asctime)s [%(levelname)s] [%(filename)s]:[%(lineno)s] [%(funcName)s] "
     "%(message)s "
@@ -140,7 +143,9 @@ def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
         logger.critical("Пожалуйста, проверьте переменные окружения")
+        raise InvalidTokens("Please check variables are configured in .env")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    message = "Привет, мир!"
     timestamp = 0
     current_report = {
         "message_output": "",
@@ -166,8 +171,9 @@ def main():
                     timestamp = response.get("current_date", timestamp)
             else:
                 logger.debug("Обновлений нет")
-        except InvalidTokens as error:
-            logger.error(str(error))
+                send_message(bot, message)
+        except CustomException as error:
+            logger.error(f"Ошибка: {error}")
         except Exception as error:
             message = f"Сбой в работе программы: {error}"
             current_report["message_output"] = message
