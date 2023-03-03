@@ -53,6 +53,7 @@ def send_message(bot, message):
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except telegram.error.TelegramError as error:
+        logger.error(f'Ошибка отправки сообщения в чат бота - {error}')
         return False
     else:
         logger.debug(
@@ -129,7 +130,6 @@ def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
         logger.critical('Пожалуйста, проверьте переменные окружения')
-        logger.error(f'Ошибка отправки сообщения в чат бота - {error}')
         raise InvalidTokens('Please check variables are configured in .env')
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = 0
