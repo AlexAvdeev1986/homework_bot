@@ -13,5 +13,7 @@ class ResponseFormatFailure(Exception):
 class WrongStatusInResponse(Exception):
     pass
 
-class SendMessageError(Exception):
+# exceptions.py
+class CustomException(Exception):
+    """Raised when there is an error in send_message function."""
     pass
