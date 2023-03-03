@@ -4,7 +4,6 @@ import os
 import sys
 import time
 from logging.handlers import RotatingFileHandler
-from send_message import send_message
 
 import requests
 import telegram
