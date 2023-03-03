@@ -10,7 +10,7 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (EndpointFailureResponseCodes, InvalidTokens,
-                        ResponseFormatFailure, WrongStatusInResponse)
+                        ResponseFormatFailure, WrongStatusInResponse, SendMessageError)
 
 
 load_dotenv()
@@ -51,17 +51,15 @@ def check_tokens():
 
 def send_message(bot, message):
     """Send status update."""
-    logging.info(f'Сообщение отправлено в чат '
-                     f'{TELEGRAM_CHAT_ID}: {message}')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception:
-        raise TelegramError(f'Ошибка отправки сообщения в чат '
+        raise SendMessageError(f'Ошибка отправки сообщения в чат '
                                f'{TELEGRAM_CHAT_ID}')
     else:
-        logger.debug(
-            f'Message \"{message}\" was sent from bot to chat '
-            f'{TELEGRAM_CHAT_ID}')
+        logging.info(f'Сообщение отправлено в чат '
+                     f'{TELEGRAM_CHAT_ID}: {message}')
+
 
 
 def get_api_answer(timestamp):

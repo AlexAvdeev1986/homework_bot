@@ -12,3 +12,7 @@ class ResponseFormatFailure(Exception):
 
 class WrongStatusInResponse(Exception):
     pass
+
+class SendMessageError(Exception):
+    """Собственное исключение."""
+    pass
