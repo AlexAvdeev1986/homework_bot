@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 from exceptions import (
     EndpointFailureResponseCodes,
+    InvalidTokens,
     ResponseFormatFailure,
     WrongStatusInResponse,
     CustomException,
@@ -41,7 +42,6 @@ file_handler = RotatingFileHandler(
 )
 logger.addHandler(handler)
 logger.addHandler(file_handler)
-logging.basicConfig(filename="example.log", level=logging.DEBUG)
 formatter = logging.Formatter(
     "%(asctime)s [%(levelname)s] [%(filename)s]:[%(lineno)s] [%(funcName)s] "
     "%(message)s "
@@ -62,7 +62,9 @@ def send_message(bot, message):
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except telegram.error.TelegramError as error:
         logger.error(f"Ошибка отправки сообщения в чат бота - {error}")
-        return False
+        raise CustomException(
+            "Ошибка отправки сообщения в чат бота"
+        ) from error
     else:
         logger.debug(
             f'Message "{message}" was sent from bot to chat '
@@ -141,8 +143,8 @@ def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
         logger.critical("Пожалуйста, проверьте переменные окружения")
+        raise InvalidTokens("Please check variables are configured in .env")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    message = "Привет, мир!"
     timestamp = 0
     current_report = {
         "message_output": "",
@@ -170,7 +172,7 @@ def main():
                 logger.debug("Обновлений нет")
                 send_message(bot, message)
         except CustomException as error:
-            logger.error(f"Ошибка: {error}")
+            logger.error(f"Ошибка в отправке сообщения - {error}")
         except Exception as error:
             message = f"Сбой в работе программы: {error}"
             current_report["message_output"] = message
