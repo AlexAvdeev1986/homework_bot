@@ -52,15 +52,13 @@ def send_message(bot, message):
     logger.info(f'Попытка отправить сообщение \"{message}\" в чат бота')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
-    except telegram.error.TelegramError as error:
-        logger.error(f'Ошибка отправки сообщения в чат бота - {error}')
+    except telegram.error.TelegramError as message:
         return False
     else:
         logger.debug(
             f'Message \"{message}\" was sent from bot to chat '
             f'{TELEGRAM_CHAT_ID}')
         return True
-
 
 def get_api_answer(timestamp):
     """Yandex API answer retrieval function."""
@@ -129,6 +127,7 @@ def parse_status(homework):
 def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
+        logger.error(f'Ошибка отправки сообщения в чат бота - {error}')
         logger.critical('Пожалуйста, проверьте переменные окружения')
         raise InvalidTokens('Please check variables are configured in .env')
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
@@ -157,7 +156,9 @@ def main():
             else:
                 logger.debug('Обновлений нет')
         except ResponseFormatFailure as error:
-            logger.error(error)
+            message = f'Сбой в работе программы: {error}.'
+            logging.error(message, exc_info=True)
+            send_message(bot, message)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             current_report['message_output'] = message
@@ -165,6 +166,7 @@ def main():
             if current_report != prev_report:
                 send_message(bot, current_report['message_output'])
                 prev_report = current_report.copy()
+
         finally:
             time.sleep(RETRY_PERIOD)
 
