@@ -145,6 +145,7 @@ def main():
         logger.critical("Пожалуйста, проверьте переменные окружения")
         raise InvalidTokens("Please check variables are configured in .env")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    message = 'Привет, мир!'
     timestamp = 0
     current_report = {
         "message_output": "",
