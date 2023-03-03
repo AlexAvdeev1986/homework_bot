@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 
 from exceptions import (
     EndpointFailureResponseCodes,
-    InvalidTokens,
     ResponseFormatFailure,
     WrongStatusInResponse,
     CustomException,
