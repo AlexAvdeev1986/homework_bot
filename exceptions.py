@@ -12,3 +12,6 @@ class ResponseFormatFailure(Exception):
 
 class WrongStatusInResponse(Exception):
     pass
+
+class SendMessageError(Exception):
+    pass
