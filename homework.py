@@ -10,7 +10,7 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (EndpointFailureResponseCodes, InvalidTokens,
-                        ResponseFormatFailure, WrongStatusInResponse, CustomException)
+                        ResponseFormatFailure, WrongStatusInResponse,CustomException)
 
 
 load_dotenv()
@@ -52,8 +52,9 @@ def send_message(bot, message):
     logger.info(f'Попытка отправить сообщение \"{message}\" в чат бота')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
-    except telegram.error.TelegramError:
-        raise CustomException("Не удалось отправить сообщение в чат бота")
+    except telegram.error.TelegramError as error:
+        logger.error(f'Ошибка отправки сообщения в чат бота - {error}')
+        return False
     else:
         logger.debug(
             f'Message \"{message}\" was sent from bot to chat '
@@ -131,10 +132,6 @@ def main():
         logger.critical('Пожалуйста, проверьте переменные окружения')
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = 0
-    try:
-        send_message(bot, message)
-    except CustomException as e:
-        logger.error(f"Ошибка: {e}")
     current_report = {
         'message_output': '',
     }
@@ -159,8 +156,7 @@ def main():
             else:
                 logger.debug('Обновлений нет')
         except InvalidTokens as e:
-            logger.error(str(e))
-            sys.exit(1)
+                logger.error(str(e))
         except ResponseFormatFailure as error:
             logger.error(error)
         except Exception as error:
