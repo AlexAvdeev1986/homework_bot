@@ -14,7 +14,6 @@ from exceptions import (
     InvalidTokens,
     ResponseFormatFailure,
     WrongStatusInResponse,
-    CustomException,
 )
 
 
