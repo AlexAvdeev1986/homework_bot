@@ -59,6 +59,7 @@ def check_tokens():
 
 def send_message(bot, message):
     """Send status update."""
+    logger.info(f'Попытка отправить сообщение "{message}" в чат бота')
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception:
@@ -66,8 +67,9 @@ def send_message(bot, message):
             f"Ошибка отправки сообщения в чат " f"{TELEGRAM_CHAT_ID}"
         )
     else:
-        logging.info(
-            f"Сообщение отправлено в чат " f"{TELEGRAM_CHAT_ID}: {message}"
+        logger.debug(
+            f'Message "{message}" was sent from bot to chat '
+            f"{TELEGRAM_CHAT_ID}"
         )
 
 
