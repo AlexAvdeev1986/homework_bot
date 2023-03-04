@@ -142,6 +142,7 @@ def main():
     if not check_tokens():
         logger.critical("Пожалуйста, проверьте переменные окружения")
         raise InvalidTokens("Please check variables are configured in .env")
+        sys.exit(1)
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     message = "Привет, мир!"
     timestamp = 0
@@ -164,9 +165,9 @@ def main():
             else:
                 current_report["message_output"] = "Обновлений нет"
             if current_report != prev_report:
-                if send_message(bot, current_report["message_output"]):
-                    prev_report = current_report.copy()
-                    timestamp = response.get("current_date", timestamp)
+                send_message(bot, current_report["message_output"])
+                prev_report = current_report.copy()
+                timestamp = response.get("current_date", timestamp)
             else:
                 logger.debug("Обновлений нет")
                 send_message(bot, message)
