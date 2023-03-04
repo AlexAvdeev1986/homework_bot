@@ -61,6 +61,7 @@ def send_message(bot, message):
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except telegram.error.TelegramError as error:
+        logger.error(f"Ошибка отправки сообщения в чат бота - {error}")
         raise CustomException(
             "Ошибка отправки сообщения в чат бота"
         ) from error
@@ -144,7 +145,7 @@ def main():
         logger.critical("Пожалуйста, проверьте переменные окружения")
         raise InvalidTokens("Please check variables are configured in .env")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    message = 'Привет, мир!'
+    message = "Привет, мир!"
     timestamp = 0
     current_report = {
         "message_output": "",
@@ -171,6 +172,9 @@ def main():
             else:
                 logger.debug("Обновлений нет")
                 send_message(bot, message)
+        except InvalidTokens as error:
+            print(error)
+            sys.exit(1)
         except CustomException as error:
             logger.error(f"Ошибка в отправке сообщения - {error}")
         except Exception as error:
