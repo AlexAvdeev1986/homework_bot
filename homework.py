@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(__file__)
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-RETRY_PERIOD = 600
+RETRY_PERIOD = 60*10
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 LAST_DAY_OFFSET = 86400
@@ -61,6 +61,7 @@ def send_message(bot, message):
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except telegram.error.TelegramError as error:
+        logger.error(f"Ошибка отправки сообщения в чат бота - {error}")
         raise CustomException(
             "Ошибка отправки сообщения в чат бота"
         ) from error
