@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(__file__)
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-RETRY_PERIOD = 60 * 10
+RETRY_PERIOD = 600
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
 LAST_DAY_OFFSET = 86400
@@ -143,8 +143,9 @@ def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
         logger.critical("Пожалуйста, проверьте переменные окружения")
+        raise InvalidTokens("Please check variables are configured in .env")
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    message = "Привет, мир!"
+    message = 'Привет, мир!'
     timestamp = 0
     current_report = {
         "message_output": "",
@@ -171,9 +172,6 @@ def main():
             else:
                 logger.debug("Обновлений нет")
                 send_message(bot, message)
-        except InvalidTokens as error:
-            print(error)
-            sys.exit(1)
         except CustomException as error:
             logger.error(f"Ошибка в отправке сообщения - {error}")
         except Exception as error:
