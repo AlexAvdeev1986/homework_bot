@@ -61,7 +61,6 @@ def send_message(bot, message):
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except telegram.error.TelegramError as error:
-        logger.error(f"Ошибка отправки сообщения в чат бота - {error}")
         raise CustomException(
             "Ошибка отправки сообщения в чат бота"
         ) from error
