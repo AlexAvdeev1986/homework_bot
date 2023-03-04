@@ -26,7 +26,6 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 RETRY_PERIOD = 60 * 10
 ENDPOINT = "https://practicum.yandex.ru/api/user_api/homework_statuses/"
 HEADERS = {"Authorization": f"OAuth {PRACTICUM_TOKEN}"}
-LAST_DAY_OFFSET = 86400
 HOMEWORK_VERDICTS = {
     "approved": "Работа проверена: ревьюеру всё понравилось. Ура!",
     "reviewing": "Работа взята на проверку ревьюером.",
@@ -70,7 +69,6 @@ def send_message(bot, message):
             f'Message "{message}" was sent from bot to chat '
             f"{TELEGRAM_CHAT_ID}"
         )
-        return True
 
 
 def get_api_answer(timestamp):
