@@ -14,6 +14,6 @@ class WrongStatusInResponse(Exception):
     pass
 
 
-class CustomException(Exception):
+class ChatbotMessagesError(Exception):
     """Raised when there is an error in send_message function."""
     pass
