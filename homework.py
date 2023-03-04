@@ -14,7 +14,7 @@ from exceptions import (
     InvalidTokens,
     ResponseFormatFailure,
     WrongStatusInResponse,
-    CustomException,
+    ChatbotMessagesError,
 )
 
 
@@ -61,7 +61,7 @@ def send_message(bot, message):
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except telegram.error.TelegramError as error:
         logger.error(f"Ошибка отправки сообщения в чат бота - {error}")
-        raise CustomException(
+        raise ChatbotMessagesError(
             "Ошибка отправки сообщения в чат бота"
         ) from error
     else:
@@ -171,7 +171,7 @@ def main():
             else:
                 logger.debug("Обновлений нет")
                 send_message(bot, message)
-        except CustomException as error:
+        except ChatbotMessagesError as error:
             logger.error(f"Ошибка в отправке сообщения - {error}")
         except Exception as error:
             message = f"Сбой в работе программы: {error}"
