@@ -141,7 +141,9 @@ def main():
     """Yandex-practicum homework status changes telegram notification."""
     if not check_tokens():
         logger.critical("Пожалуйста, проверьте переменные окружения")
-        sys.exit("Ошибка: не найдены необходимые переменные окружения в файле .env")
+        sys.exit(
+            "Ошибка: не найдены необходимые переменные окружения в файле .env"
+        )
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     message = "Привет, мир!"
     timestamp = 0
