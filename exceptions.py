@@ -1,7 +1,3 @@
-class InvalidTokens(Exception):
-    pass
-
-
 class EndpointFailureResponseCodes(Exception):
     pass
 
