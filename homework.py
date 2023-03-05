@@ -170,7 +170,6 @@ def main():
                 timestamp = response.get("current_date", timestamp)
             else:
                 logger.debug("Обновлений нет")
-                return
         except ChatbotMessagesError as error:
             logger.error(f"Ошибка в отправке сообщения - {error}")
         except Exception as error:
